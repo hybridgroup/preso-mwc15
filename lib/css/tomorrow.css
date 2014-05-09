@@ -20,25 +20,25 @@ pre .nginx .title,
 pre .request,
 pre .status,
 pre .clojure .attribute {
-  color: #E3CEAB;
+    color: #4271ae;
 }
 
 pre .django .template_tag,
 pre .django .variable,
 pre .django .filter .argument {
-  color: #DCDCDC;
+    color: #c82829;
 }
 
 pre .number,
 pre .date {
-  color: #8CD0D3;
+    color: #f5871f;
 }
 
 pre .dos .envvar,
 pre .dos .stream,
 pre .variable,
 pre .apache .sqbracket {
-  color: #EFDCBC;
+    color: #c82829;
 }
 
 pre .dos .flow,
@@ -47,7 +47,7 @@ pre .python .exception,
 pre .python .built_in,
 pre .literal,
 pre .tex .special {
-  color: #EFEFAF;
+    color: #4271ae;
 }
 
 pre .diff .chunk,
@@ -65,14 +65,14 @@ pre .apache .tag,
 pre .nginx .built_in,
 pre .tex .command,
 pre .prompt {
-    color: #efef8f;
+    color: #4271ae;
 }
 
 pre .dos .winutils,
 pre .ruby .symbol,
 pre .ruby .symbol .string,
 pre .ruby .string {
-  color: #DCA3A3;
+    color: #718c00;
 }
 
 pre .diff .deletion,
@@ -90,7 +90,7 @@ pre .attr_selector,
 pre .pseudo,
 pre .apache .cbracket,
 pre .tex .formula {
-  color: #CC9393;
+    color: #718c00;
 }
 
 pre .shebang,
@@ -100,7 +100,7 @@ pre .java .annotation,
 pre .template_comment,
 pre .pi,
 pre .doctype {
-  color: #7F9F7F;
+    color: #8e908c;
 }
 
 pre .coffeescript .javascript,
