@@ -15,7 +15,7 @@
   vertical-align: middle;
 }
 
-pre code {
+.reveal pre code {
   background: #FFFFFF;
   max-height: 600px;
 }

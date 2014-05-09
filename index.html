@@ -42,7 +42,7 @@
           <div class="image-container">
             <img src="images/cylonjs-logo.png">
           </div>
-          <h2>JavaScript Robotics</h2>
+          <h2>The JavaScript Evolution Of Open Source Robotics</h2>
           <h3>cylonjs.com</h3>
         </section>
 
@@ -231,7 +231,7 @@ Cylon.robot({
 
         <section>
           <section>
-            <h2>Sphero + Pebble</h2>
+            <h2>Sphero + Pebble + Robeaux</h2>
           </section>
 
           <section>
@@ -269,11 +269,11 @@ var bots = [
   { port: '/dev/rfcomm0', name: 'Thelma' },
   { port: '/dev/rfcomm1', name: 'Louise' },
   { port: '/dev/rfcomm2', name: 'Grace' },
-  { port: '/dev/rfcomm3', name: 'Ada' }
-  { port: '/dev/rfcomm4', name: 'Uhura' }
+  { port: '/dev/rfcomm3', name: 'Ada' },
+  { port: '/dev/rfcomm4', name: 'Mary' }
 ];
 
-var Green = 0x0000FF;
+var Green = 0x00FF00;
 var Red = 0xFF0000;
 
 var ConwayRobot = (function() {
@@ -285,6 +285,7 @@ var ConwayRobot = (function() {
   ConwayRobot.prototype.born = function() {
     this.contacts = 0;
     this.age = 0;
+    this.alive = true;
     this.life();
     this.move();
   };
@@ -305,7 +306,7 @@ var ConwayRobot = (function() {
   };
 
   ConwayRobot.prototype.enoughContacts = function() {
-    return (this.contacts >= 2 && this.contacts < 7);
+    return (this.contacts > 2 && this.contacts < 7);
   };
 
   ConwayRobot.prototype.birthday = function() {
@@ -314,7 +315,7 @@ var ConwayRobot = (function() {
     console.log("Happy birthday, " + this.name + ". You are " + this.age + " and had " + this.contacts + " contacts.");
 
     if (this.enoughContacts()) {
-      if (this.alive == null) { this.rebirth(); }
+      if (this.alive == false) { this.rebirth(); }
     } else {
       this.death();
     }
@@ -323,18 +324,24 @@ var ConwayRobot = (function() {
   };
 
   ConwayRobot.prototype.work = function(me) {
-    me.born();
+    var self = this;
+    me.sphero.on('connect', function() {
+        me.sphero.detectCollisions();
+        me.born();
+    });
 
     me.sphero.on('collision', function() {
-      this.contacts += 1;
+      self.contacts += 1;
     });
 
     every((3).seconds(), function() {
-      if (me.alive != null) { me.move(); }
+      if (me.alive != false) { me.move(); }
     });
 
     every((10).seconds(), function() {
-      if (me.alive != null) { me.birthday(); }
+      if (me.alive != false) { 
+        me.birthday(); 
+      }
     });
   };
 
@@ -352,9 +359,51 @@ for (var i = 0; i < bots.length; i++) {
   Cylon.robot(robot);
 }
 
+
+var PebbleRobot = (function() {
+  function PebbleRobot() {}
+
+  PebbleRobot.prototype.connection = { name: 'pebble', adaptor: 'pebble' };
+  PebbleRobot.prototype.device = { name: 'pebble', driver: 'pebble' };
+  PebbleRobot.prototype.work = function(me) {
+      var dead = 0;
+      var alive = 0;
+      me.pebble.on('connect', function() { console.log("Pebble Connected!"); });
+      every((1).second(), function(){
+        alive = 0;
+        dead = 0;
+        for (var i = 0; i < bots.length; i++) {
+          var bot = bots[i];
+          me.master.findRobot(bot.name, function(error, spheroBot) {
+            if (spheroBot.alive == true) {
+              alive += 1; 
+            } else {
+              dead += 1;
+            }
+          });    
+        }
+        var msg = "alive: " + alive + "\ndead: " + dead + "\n" 
+        me.pebble.message_queue().push(msg);
+      });
+  };
+
+  return PebbleRobot;
+})();
+
+var robot = new PebbleRobot;
+robot.name = "pebble";
+Cylon.robot(robot);
+
+Cylon.api({host: '192.168.1.116', port: '8080', ssl:  false});
+
 Cylon.start();
             </code></pre>
           </section>
+
+        <section>
+          <h2><a href='http://10.22.25.22:8080' target="_new">Robeaux - Universal Robot API</a></h2>
+        </section>
+
         </section>
 
         <section>
@@ -365,92 +414,76 @@ Cylon.start();
           <section>
             <pre><code data-trim>
 var Cylon = require('cylon');
-
-var haarcascade = __dirname + "/haarcascade_frontalface_alt.xml"
+var haarcascade = "" + __dirname + "/haarcascade_frontalface_alt.xml";
 
 Cylon.robot({
   connections: [
-    { name: 'ardrone', adaptor: 'ardrone', port: '192.168.1.1' },
-    { name: 'opencv', adaptor: 'opencv' }
+    { name: 'opencv', adaptor: 'opencv' }, 
+    { name: 'ardrone', adaptor: 'ardrone', port: '192.168.1.1' }
   ],
-
   devices: [
-    { name: 'drone', driver: 'ardrone', connection: 'ardrone' },
-    { name: 'window', driver: 'window', conneciton: 'opencv' },
-    { name: 'eye', driver: 'opencv', conneciton: 'opencv' }
+    { name: 'drone', driver: 'ardrone', connection: 'ardrone' }, 
+    { name: 'window', driver: 'window', conneciton: 'opencv' }, 
+    { name: 'mat', driver: 'mat', conneciton: 'opencv' }
   ],
-
   work: function(my) {
-    this.detect = false;
-    this.image = null;
     var self = this;
-
+    self.detect = false;
+    self.image = null;
     my.drone.getPngStream().on('data', function(png) {
-      my.eye.readImage(png, function(err, img) {
+      my.mat.readImage(png, function(err, img) {
         self.image = img;
-        if (self.detect === false) { my.window.show(img); }
+        if (self.detect === false) {
+          my.window.show(img);
+        }
       });
     });
-
-    my.eye.on('facesDetected', function(err, im, faces) {
-      var biggest = 0,
-          face = null;
-
-      for (var i = 0; i < faces.length; i++) {
-        var f = faces[i];
+    my.mat.on('facesDetected', function(err, im, faces) {
+      var biggest, center_x, f, face, turn, _i, _len;
+      biggest = 0;
+      face = null;
+      for (_i = 0, _len = faces.length; _i < _len; _i++) {
+        f = faces[_i];
         if (f.width > biggest) {
           biggest = f.width;
           face = f;
         }
       }
-
       if (face !== null && (face.width <= 100 && face.width >= 45)) {
-        im.rectangle(
-          [face.x, face.y],
-          [face.x + face.width, face.y + face.height],
-          [0, 255, 0],
-          2
-        );
-
-        var center_x = im.width() * 0.5,
-            turn = -(face.x - center_x) / center_x;
-
-        console.log("turning:", turn);
-
+        im.rectangle([face.x, face.y], [face.x + face.width, face.y + face.height], [0, 255, 0], 2);
+        center_x = im.width() * 0.5;
+        turn = -(face.x - center_x) / center_x;
+        console.log("turning: " + turn);
         if (turn < 0) {
           my.drone.clockwise(Math.abs(turn * 0.7));
         } else {
           my.drone.counterClockwise(Math.abs(turn * 0.7));
         }
       }
-
       my.window.show(im);
     });
-
     my.drone.takeoff();
-
     after((8).seconds(), function() { my.drone.up(0.5); });
-    after((10).seconds(), my.drone.hover);
-
+    after((10).seconds(), function() { my.drone.hover(); });
     after((13).seconds(), function() {
       self.detect = true;
-
       every(0.3.seconds(), function() {
         my.drone.hover();
-        my.eye.detectFaces(self.image, haarcascade);
+        my.mat.detectFaces(self.image, haarcascade);
       });
-
-      after((30).seconds, my.drone.land);
+      after((30).seconds(), function() { my.drone.land(); });
     });
   }
-}).start();
+});
+
+Cylon.start();
             </code></pre>
           </section>
         </section>
 
         <section>
           <section>
-            <h2>ARDrone, OpenCV, PS3 Controller, &amp; <a href='file:///home/ron/Development/gobot/brain/index.html' target="_new">Neurosky</a></h2>
+            <h2>ARDrone + OpenCV + PS3 Controller + <a href='file:///home/ron/Development/gobot/brain/index.html' target="_new">Neurosky</a></h2>
           </section>
           <section>
             <pre><code data-trim>
@@ -458,15 +491,15 @@ var Cylon = require('cylon');
 
 Cylon.robot({
   connections: [
-    {name: 'ardrone', adaptor: 'ardrone', port: '192.168.1.1'},
     {name: 'opencv', adaptor: 'opencv'},
-    {name: 'dualshock3', adaptor: 'joystick', controller: 'dualshock3'}
+    {name: 'dualshock3', adaptor: 'joystick', controller: 'dualshock3'}, 
+    {name: 'ardrone', adaptor: 'ardrone', port: '192.168.1.1'}
   ],
   devices: [
-    {name: 'drone', driver: 'ardrone', connection: 'ardrone'},
+    {name: 'mat', driver: 'mat', conneciton: 'opencv' },
     {name: 'window', driver: 'window', conneciton: 'opencv'},
-    {name: 'eye', driver: 'opencv', conneciton: 'opencv'},
-    {name: 'controller', driver: 'dualshock3', connection: 'dualshock3'}
+    {name: 'controller', driver: 'dualshock3', connection: 'dualshock3'}, 
+    {name: 'drone', driver: 'ardrone', connection: 'ardrone'}
   ],
   validate_pitch: function(data, offset) {
     var value;
@@ -482,68 +515,66 @@ Cylon.robot({
     }
   },
   work: function(my) {
-    this.image = null;
-    var self = this;
+    var self = this; 
+    self.offset = 125.0;
+    self.right_stick = {
+      x: self.offset,
+      y: self.offset
+    };
+    self.left_stick = {
+      x: self.offset,
+      y: self.offset
+    };
 
     my.drone.getPngStream().on('data', function(png) {
-      my.eye.readImage(png, function(err, img) {
-        self.image = img;
-        if (self.detect === false) { my.window.show(img); }
+      my.mat.readImage(png, function(err, img) {
+        my.window.show(img);
       });
     });
-    
-    this.offset = 125.0;
-    this.right_stick = {
-      x: this.offset,
-      y: this.offset
-    };
-    this.left_stick = {
-      x: this.offset,
-      y: this.offset
-    };
-    my.controller.on("square:press", my.drone.takeoff);
-    my.controller.on("triangle:press", my.drone.hover);
-    my.controller.on("x:press", my.drone.land);
-    my.controller.on("right:move", function(_this) {
-      return function(pair) {
-        _this.right_stick = pair;
-      };
+    my.controller.on("square:press", function(data) {
+      my.drone.takeoff();
     });
-    my.controller.on("left:move", function(_this) {
-      return function(pair) {
-        _this.left_stick = pair;
-      };
+    my.controller.on("triangle:press", function(data) { 
+      my.drone.hover()
     });
-    every(0, (function(_this) {
+    my.controller.on("x:press", function(data) {
+      my.drone.land()
+    });
+    my.controller.on("right:move", function(data) {
+      self.right_stick = data;
+    });
+    my.controller.on("left:move", function(data) {
+      self.left_stick = data;
+    });
+    every(0, function() {
       var pair;
-      pair = _this.left_stick;
-      if (pair.y < _this.offset - 5) {
-        my.drone.front(my.validate_pitch(pair.y - _this.offset, _this.offset));
-      } else if (pair.y > _this.offset + 5) {
-        my.drone.back(my.validate_pitch(pair.y - _this.offset, _this.offset));
+      pair = self.left_stick;
+      if (pair.y < self.offset - 5) {
+        my.drone.front(my.validate_pitch(pair.y - self.offset, self.offset));
+      } else if (pair.y > self.offset + 5) {
+        my.drone.back(my.validate_pitch(pair.y - self.offset, self.offset));
       }
-      if (pair.x > _this.offset + 5) {
-        my.drone.right(my.validate_pitch(pair.x - _this.offset, _this.offset));
-      } else if (pair.x < _this.offset - 5) {
-        my.drone.left(my.validate_pitch(pair.x - _this.offset, _this.offset));
+      if (pair.x > self.offset + 5) {
+        my.drone.right(my.validate_pitch(pair.x - self.offset, self.offset));
+      } else if (pair.x < self.offset - 5) {
+        my.drone.left(my.validate_pitch(pair.x - self.offset, self.offset));
       }
     });
-    every(0, function(_this) {
+    every(0, function() {
       var pair;
-      pair = _this.right_stick;
-      if (pair.y < _this.offset - 5) {
-        my.drone.up(my.validate_pitch(pair.y - _this.offset, _this.offset));
-      } else if (pair.y > _this.offset + 5) {
-        my.drone.down(my.validate_pitch(pair.y - _this.offset, _this.offset));
+      pair = self.right_stick;
+      if (pair.y < self.offset - 5) {
+        my.drone.up(my.validate_pitch(pair.y - self.offset, self.offset));
+      } else if (pair.y > self.offset + 5) {
+        my.drone.down(my.validate_pitch(pair.y - self.offset, self.offset));
       }
-      if (pair.x > _this.offset + 20) {
-        my.drone.clockwise(my.validate_pitch(pair.x - _this.offset, _this.offset));
-      } else if (pair.x < _this.offset - 20) {
-        my.drone.counterClockwise(my.validate_pitch(pair.x - _this.offset, _this.offset));
+      if (pair.x > self.offset + 20) {
+        my.drone.clockwise(my.validate_pitch(pair.x - self.offset, self.offset));
+      } else if (pair.x < self.offset - 20) {
+        my.drone.counterClockwise(my.validate_pitch(pair.x - self.offset, self.offset));
       }
     });
-
-    every(0.1.seconds(), my.drone.hover);
+    every((0.1).seconds(), my.drone.hover);
   }
 });
 
