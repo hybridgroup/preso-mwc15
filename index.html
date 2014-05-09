@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
 
-    <title>GopherCon</title>
+    <title>Cylon.js (cylonjs.com) - ScotlandJS 2014</title>
 
     <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
     <meta name="author" content="Hakim El Hattab">
@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="css/theme/default.css" id="theme">
 
     <!-- For syntax highlighting -->
-    <link rel="stylesheet" href="lib/css/zenburn.css">
+    <link rel="stylesheet" href="lib/css/zenburn2.css">
 
     <link rel="stylesheet" href="css/hybrid.css">
 
@@ -39,8 +39,11 @@
       <!-- Any section element inside of this container is displayed as a slide -->
       <div class="slides">
         <section>
-          <h1>Gobot: Golang Powered Robotics</h1>
-          <h3>gobot.io</h3>
+          <div class="image-container">
+            <img src="images/cylonjs-logo.png">
+          </div>
+          <h2>JavaScript Robotics</h2>
+          <h3>cylonjs.com</h3>
         </section>
 
         <section>
@@ -48,7 +51,7 @@
         </section>
 
         <section>
-          <h2>This is GopherCon</h2>
+          <h2>This is ScotlandJS</h2>
         </section>
 
         <section>
@@ -84,7 +87,7 @@
         </section>
 
         <section>
-          <h2>Golang Powered Robotics</h2>
+          <h2>JavaScript Robotics</h2>
         </section>
 
         <section>
@@ -95,26 +98,19 @@
 
         <section>
           <h2>
-            <blockquote>By its design, Go proposes an approach for the construction of system software on multicore machines</blockquote>
-            <figcaption>Golang FAQ</figcaption>
-          </h2>
-        </section>
-
-        <section>
-          <h2>
-            <blockquote>...the street finds its own uses for things</blockquote>
+            <blockquote>The future is already here, it's just not very evenly distributed</blockquote>
             <figcaption>William Gibson</figcaption>
           </h2>
         </section>
 
         <section>
           <div class="image-container">
-            <img src="images/gobot-logo.png">
+            <img src="images/cylonjs-logo.png">
           </div>
         </section>
 
         <section>
-          <h2>A Go Framework for Robotics & Physical Computing</h2>
+          <h2>A JavaScript Framework for Robotics & Physical Computing</h2>
         </section>
 
         <section>
@@ -129,120 +125,62 @@
           <h2>At the Same Time!</h2>
         </section>
 
-
-
         <section>
-	        <section>
-	          <h2>The 10 Rules Of RobotOps</h2>
-	        </section>
-
-	        <section>
-	          <h2>"What's 'RobotOps'?"</h2>
-	        </section>
-
-	        <section>
-	          <h2>"DevOps For Robots"</h2>
-	        </section>
-
-	        <section>
-	          <div class="image-container">
-	            <img src="images/cylonjs-logo.png">
-	          </div>
-	          <h3>cylonjs.com</h3>
-	        </section>
-
-	        <section>
-	          <div class="image-container">
-	            <img src="images/artoo-logo.png">
-	            <img src="images/artoo-robot.png">
-	          </div>
-	          <h3>artoo.io</h3>
-	        </section>
-
-	        <section>
-	          <div class="image-container">
-	            <img src="images/gobot-logo.png">
-	          </div>
-	          <h3>gobot.io</h3>
-	        </section>
+          <div class="image-container">
+            <img src="images/arch-1.png">
+          </div>
+          <h3>Cylon.js Architecture</h3>
         </section>
 
         <section>
-          <section>
-            <h2>Declarative Code Syntax (#1)</h2>
-          </section>
+          <div class="image-container">
+            <img src="images/arch-2.png">
+          </div>
+          <h3>Cylon.js API</h3>
+        </section>
 
-          <section>
-            <pre><code data-trim contenteditable>
-package main
+        <section>
+          <h2>Test-Driven Robotics</h2>
+        </section>
 
-import (
-  "github.com/hybridgroup/gobot"
-  "github.com/hybridgroup/gobot-digispark"
-  "github.com/hybridgroup/gobot-gpio"
-)
+        <section>
+          <h2>Command Line Interface</h2>
+          <h3>gort.io</h3>
+        </section>
 
-func main() {
+        <section>
+          <h2>RobotOps - DevOps For Robots</h2>
+          <h3>robotops.com</h3>
+        </section>
 
-  digispark := new(gobotDigispark.DigisparkAdaptor)
-  digispark.Name = "Digispark"
+        <section>
+          <h2>Show Me The Demo!</h2>
+        </section>
 
-  led := gobotGPIO.NewLed(digispark)
-  led.Name = "led"
-  led.Pin = "0"
+        <section>
+          <h2>Arduino</h2>
+        </section>
 
-  work := func() {
-    gobot.Every("0.5s", func() {
-      led.Toggle()
-    })
+        <section>
+          <pre><code data-trim>
+var Cylon = require('cylon');
+
+Cylon.robot({
+  connection: { 
+    name: 'arduino', 
+    adaptor: 'firmata', 
+    port: '/dev/ttyACM0' 
+  },
+  device: {
+    name: 'led', 
+    driver: 'led', 
+    pin: 13
+  },
+  work: function(my) {
+    every((1).second(), my.led.toggle);
   }
-
-  robot := gobot.Robot{
-    Connections: []gobot.Connection{digispark},
-    Devices:     []gobot.Device{led},
-    Work:        work,
-  }
-
-  robot.Start()
-}
-            </code></pre>
-          </section>
-
-        </section>
-
-        <section>
-	        <section>
-	          <h2>Multiple Platforms/Devices (#2)</h2>
-	        </section>
-
-	        <section>
-	          <h2>Arduino</h2>
-	        </section>
-
-	        <section>
-	          <h2>Digispark</h2>
-	        </section>
-				</section>
-
-        <section>
-          <h2>Admin Tools (#3)</h2>
-        </section>
-
-        <section>
-          <h2>Built-In API (#4)</h2>
-        </section>
-
-        <section>
-          <h2>Robeaux</h2>
-          <h3>robeaux.io</h3>
-        </section>
-
-        <section>
-          <h2>Command Line Interface (#5)</h2>
-        </section>
-
-        <section>
-          <h2>Code Generators (#6)</h2>
+}).start();
+          </code></pre>
         </section>
 
         <section>
@@ -250,64 +188,46 @@ func main() {
         </section>
 
         <section>
+          <pre><code data-trim>
+var Cylon = require('cylon');
+
+Cylon.robot({
+  connection: { 
+    name: 'tessel', 
+    adaptor: 'tessel', 
+    port: 'LED'
+  },
+  device: {
+    name: 'led', 
+    driver: 'led', 
+    pin: 13
+  },
+  work: function(my) {
+    every((1).second(), my.led.toggle);
+  }
+}).start();
+          </code></pre>
+        </section>
+
+        <section>
           <section>
-            <h2>Test-Driven Robotics (#7)</h2>
+            <h2>Choose Your Own Hardware Adventure!</h2>
           </section>
-
-          <section>
-            <pre><code data-trim contenteditable>
-describe("robot", function () {
-  var robot = Cylon.findRobot("testor");
-
-  it("should have work", function () {
-    return robot.work.should.be.a('function');
-  });
-
-  it("should toggle the led after 1 second", 
-    function (done) {
-      var led = robot.devices['led'];
-      var toggle = sinon.stub(led, 'toggle');
-      clock.tick((1).second());
-      toggle.should.have.been.called;
-      done();
-  });
-});
-            </code></pre>
-          </section>
-        </section>
-
-        <section>
-          <h2>Documentation &amp; Support (#8)</h2>
-        </section>
-
-        <section>
-          <h2>Security (#9)</h2>
-        </section>
-
-        <section>
-	        <section>
-	          <h2>Choose Your Own Hardware Adventure!</h2>
-	        </section>
 
           <section>
             <h2>To win an Arduino, tweet</h2>
-            <h3>@arduino and @gobotio</h3>
+            <h2>@arduino and @cylonjs</h2>
           </section>
 
-	        <section>
-	          <h2>To win a Beaglebone Black, tweet</h2>
-	          <h3>@beagleboardorg and @gobotio</h3>
-	        </section>
-
-	        <section>
-	          <h2>To win a Sphero, tweet</h2>
-	          <h3>@gosphero and @gobotio</h3>
-	        </section>
-				</section>
+          <section>
+            <h2>To win a Pebble, tweet</h2>
+            <h2>@pebble and @cylonjs</h2>
+          </section>
+        </section>
 
         <section>
           <section>
-            <h2>Swarms (#10)</h2>
+            <h2>Sphero + Pebble</h2>
           </section>
 
           <section>
@@ -339,11 +259,7 @@ describe("robot", function () {
         </section>
 
         <section>
-          <h2>ARDrone</h2>
-        </section>
-
-        <section>
-          <h2>ARDrone and OpenCV</h2>
+          <h2>ARDrone + OpenCV</h2>
         </section>
 
         <section>
@@ -355,18 +271,12 @@ describe("robot", function () {
         </section>
 
         <section>
-          <section>
-            <h2>Join the Robot Evolution!</h2>
-          </section>
+          <h2>Join the Robot Evolution!</h2>
+        </section>
 
-          <section>
-            <h2>gobot.io</h2>
-            <h3>@gobotio</h3>
-          </section>
-
-          <section>
-            <h2>robotops.com</h2>
-          </section>
+        <section>
+          <h2>cylonjs.com</h2>
+          <h3>@cylonjs</h3>
         </section>
 
         <section>
