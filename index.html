@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
 
-    <title>Cylon.js (cylonjs.com) - ScotlandJS 2014</title>
+    <title>Cylon.js (cylonjs.com) - JSConf 2014</title>
 
     <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
     <meta name="author" content="Hakim El Hattab">
@@ -47,11 +47,11 @@
         </section>
 
         <section>
-          <h2>Good Afternoon</h2>
+          <h2>Good Morning</h2>
         </section>
 
         <section>
-          <h2>This is @ScotlandJS</h2>
+          <h2>This is @JSConf</h2>
         </section>
 
         <section>
@@ -126,17 +126,11 @@
         </section>
 
         <section>
-          <div class="image-container">
-            <img src="images/arch-1.png">
-          </div>
-          <h3>Cylon.js Architecture</h3>
+          <h2>Cylon.js makes programming devices as easy as web development</h2>
         </section>
 
         <section>
-          <div class="image-container">
-            <img src="images/arch-2.png">
-          </div>
-          <h3>Cylon.js API</h3>
+          <h2>Built-in API</h2>
         </section>
 
         <section>
@@ -167,22 +161,20 @@
 var Cylon = require('cylon');
 
 Cylon.robot({
-  connection: { 
-    name: 'arduino', 
-    adaptor: 'firmata', 
-    port: '/dev/ttyACM0' 
-  },
-  device: {
-    name: 'led', 
-    driver: 'led', 
-    pin: 13
-  },
+  connection: { name: 'arduino', adaptor: 'firmata', port: '/dev/ttyACM0' },
+  device: { name: 'led', driver: 'led', pin: 13 },
+
   work: function(my) {
-    every((1).second(), my.led.toggle);
+    every((1).second(), function(){ my.led.toggle() });
   }
 }).start();
             </code></pre>
           </section>
+
+          <section>
+            <img src="http://localhost:8080/?action=stream">  
+          </section>
+
         </section>
 
         <section>
@@ -193,24 +185,46 @@ Cylon.robot({
           <section>
             <pre><code data-trim>
 var Cylon = require('cylon');
-
+ 
 Cylon.robot({
-  connection: { 
-    name: 'tessel', 
-    adaptor: 'tessel', 
-    port: 'LED'
-  },
-  device: {
-    name: 'led', 
-    driver: 'led', 
-    pin: 2
-  },
+  connection: { name: 'tessel', adaptor: 'tessel', port: 'GPIO' },
+  device: { name: 'led', driver: 'led', pin: 3 },
+ 
   work: function(my) {
-    every((1).second(), my.led.toggle);
+    every((1).second(), function(){ my.led.toggle() });
   }
 }).start();
             </code></pre>
           </section>
+
+          <section>
+            <img src="http://localhost:8080/?action=stream">  
+          </section>          
+        </section>
+
+        <section>
+          <section>
+            <h2>BeagleBone Black</h2>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+var Cylon = require('cylon');
+
+Cylon.robot({
+  connection: { name: 'beaglebone', adaptor: 'beaglebone' },
+  device: { name: 'led', driver: 'led', pin: 'P9_12' },
+
+  work: function(my) {
+    every((1).second(), function(){ my.led.toggle() });
+  }
+}).start();
+            </code></pre>
+          </section>
+
+          <section>
+            <img src="http://localhost:8080/?action=stream">  
+          </section>          
         </section>
 
         <section>
@@ -219,19 +233,80 @@ Cylon.robot({
           </section>
 
           <section>
-            <h2>To win an Arduino, tweet</h2>
-            <h2>@arduino and @cylonjs</h2>
+            <h2>To win a Sphero, tweet</h2>
+            <h2>@gosphero and @cylonjs</h2>
           </section>
 
           <section>
             <h2>To win a Pebble, tweet</h2>
             <h2>@pebble and @cylonjs</h2>
           </section>
+
+          <section>
+            <h2>To win a Beaglebone Black, tweet</h2>
+            <h2>@beagleboardorg and @cylonjs</h2>
+          </section>
         </section>
 
         <section>
           <section>
-            <h2>Sphero + Pebble + Robeaux</h2>
+            <h2>Sphero + Leap Motion</h2>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+var Cylon = require('cylon');
+
+Cylon.robot({
+  connections: [
+    { name: 'leapmotion', adaptor: 'leapmotion', port: '127.0.0.1:6437' },
+    { name: 'sphero', adaptor: 'sphero', port: '/dev/rfcomm0' }
+  ],
+  devices: [
+    { name: 'leapmotion', driver: 'leapmotion', connection: 'leapmotion' },
+    { name: 'sphero', driver: 'sphero', connection: 'sphero' }
+  ],
+  work: function(my) {
+    var y = 0;
+    var x = 0;
+    my.sphero.setBackLED(255)
+
+    my.leapmotion.on('hand', function(hand) {
+      y = hand.palmY.fromScale(50, 200).toScale(0, 90) | 0;
+      x = hand.palmX.fromScale(-30, 50).toScale(0, 90) | 0;
+    });
+
+    every((1).second(), function() {
+      my.sphero.setRGB(Math.floor(Math.random() * 16777216));
+    });
+    
+    every((0.01).second(), function() {
+      if (x != 0) {
+        if (x > 45) {
+          my.sphero.roll(40, x.fromScale(45, 90).toScale(90, 180) | 0);
+        } else {
+          my.sphero.roll(40, x.fromScale(0, 45).toScale(270, 359) | 0);
+        }
+      } else {
+        if (y > 45) {
+          my.sphero.roll(40, y.fromScale(45, 90).toScale(0, 90) | 0);
+        } else {
+          my.sphero.roll(40, y.fromScale(0, 45).toScale(180, 270) | 0);
+        }
+      }
+    });
+  }
+})
+
+Cylon.start();
+            </code></pre>
+          </section>
+
+        </section>
+
+        <section>
+          <section>
+            <h2>Sphero + Robeaux</h2>
           </section>
 
           <section>
@@ -359,126 +434,19 @@ for (var i = 0; i < bots.length; i++) {
   Cylon.robot(robot);
 }
 
-
-var PebbleRobot = (function() {
-  function PebbleRobot() {}
-
-  PebbleRobot.prototype.connection = { name: 'pebble', adaptor: 'pebble' };
-  PebbleRobot.prototype.device = { name: 'pebble', driver: 'pebble' };
-  PebbleRobot.prototype.work = function(me) {
-      var dead = 0;
-      var alive = 0;
-      me.pebble.on('connect', function() { console.log("Pebble Connected!"); });
-      every((1).second(), function(){
-        alive = 0;
-        dead = 0;
-        for (var i = 0; i < bots.length; i++) {
-          var bot = bots[i];
-          me.master.findRobot(bot.name, function(error, spheroBot) {
-            if (spheroBot.alive == true) {
-              alive += 1; 
-            } else {
-              dead += 1;
-            }
-          });    
-        }
-        var msg = "alive: " + alive + "\ndead: " + dead + "\n" 
-        me.pebble.message_queue().push(msg);
-      });
-  };
-
-  return PebbleRobot;
-})();
-
-var robot = new PebbleRobot;
-robot.name = "pebble";
-Cylon.robot(robot);
-
 Cylon.api({host: '192.168.1.116', port: '8080', ssl:  false});
 
 Cylon.start();
             </code></pre>
           </section>
 
-        <section>
-          <h2><a href='http://10.22.25.22:8080' target="_new">Robeaux - Universal Robot API</a></h2>
-        </section>
-
-        </section>
-
-        <section>
           <section>
-            <h2>ARDrone + OpenCV</h2>
+            <h2><a href='http://10.22.25.22:8080' target="_new">Robeaux - Universal Robot API</a></h2>
           </section>
 
           <section>
-            <pre><code data-trim>
-var Cylon = require('cylon');
-var haarcascade = "" + __dirname + "/haarcascade_frontalface_alt.xml";
-
-Cylon.robot({
-  connections: [
-    { name: 'opencv', adaptor: 'opencv' }, 
-    { name: 'ardrone', adaptor: 'ardrone', port: '192.168.1.1' }
-  ],
-  devices: [
-    { name: 'drone', driver: 'ardrone', connection: 'ardrone' }, 
-    { name: 'window', driver: 'window', conneciton: 'opencv' }, 
-    { name: 'mat', driver: 'mat', conneciton: 'opencv' }
-  ],
-  work: function(my) {
-    var self = this;
-    self.detect = false;
-    self.image = null;
-    my.drone.getPngStream().on('data', function(png) {
-      my.mat.readImage(png, function(err, img) {
-        self.image = img;
-        if (self.detect === false) {
-          my.window.show(img);
-        }
-      });
-    });
-    my.mat.on('facesDetected', function(err, im, faces) {
-      var biggest, center_x, f, face, turn, _i, _len;
-      biggest = 0;
-      face = null;
-      for (_i = 0, _len = faces.length; _i < _len; _i++) {
-        f = faces[_i];
-        if (f.width > biggest) {
-          biggest = f.width;
-          face = f;
-        }
-      }
-      if (face !== null && (face.width <= 100 && face.width >= 45)) {
-        im.rectangle([face.x, face.y], [face.x + face.width, face.y + face.height], [0, 255, 0], 2);
-        center_x = im.width() * 0.5;
-        turn = -(face.x - center_x) / center_x;
-        console.log("turning: " + turn);
-        if (turn < 0) {
-          my.drone.clockwise(Math.abs(turn * 0.7));
-        } else {
-          my.drone.counterClockwise(Math.abs(turn * 0.7));
-        }
-      }
-      my.window.show(im);
-    });
-    my.drone.takeoff();
-    after((8).seconds(), function() { my.drone.up(0.5); });
-    after((10).seconds(), function() { my.drone.hover(); });
-    after((13).seconds(), function() {
-      self.detect = true;
-      every(0.3.seconds(), function() {
-        my.drone.hover();
-        my.mat.detectFaces(self.image, haarcascade);
-      });
-      after((30).seconds(), function() { my.drone.land(); });
-    });
-  }
-});
-
-Cylon.start();
-            </code></pre>
-          </section>
+            <img src="http://localhost:8080/?action=stream">  
+          </section>          
         </section>
 
         <section>
@@ -605,6 +573,205 @@ Cylon.start();
         </section>
 
         <section>
+          <h2>Pebble (Featuring Artoo) + </h2>
+          <h2>ARDrone + OpenCV + </h2>
+          <h2>Sphero + DigiSpark (Featuring Gobot)</h2>
+        </section>
+
+        <section>
+          <section>
+            <div class="image-container">
+              <img src="images/artoo-logo.png">
+              <img src="images/artoo-robot.png">
+            </div>
+            <h3>artoo.io</h3>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+require 'artoo'
+require 'http'
+ 
+connection :pebble, :adaptor => :pebble
+device     :watch,  :driver  => :pebble, :name => 'pebble'
+ 
+api :host => '0.0.0.0', :port => '8080'
+ 
+name 'pebble'
+ 
+def button_push(*data)
+  unless data[1].nil?
+    puts "Posting to Cylon"
+    HTTP[:content_type => 'application/json'].get "https://192.168.1.3:3000/robots/drone/commands/faceOff"
+    p "#{data[1]} button pushed"
+  end
+end
+ 
+work do
+  pebble.send_notification("Hello Pebble!")
+  on pebble, :button => :button_push
+end
+            </code></pre>
+          </section>
+        </section>
+          
+        <section>
+          <pre><code data-trim>
+var Cylon = require('cylon');
+var rest = require('restler');
+var haarcascade = "" + __dirname + "/haarcascade_frontalface_alt.xml";
+ 
+var DroneRobot = (function(){ 
+
+  function DroneRobot() {} 
+ 
+  DroneRobot.prototype.commands = ["faceOff"];
+ 
+  DroneRobot.prototype.connections = [
+    { name: 'opencv', adaptor: 'opencv' }, 
+    { name: 'ardrone', adaptor: 'ardrone', port: '192.168.1.1' }
+  ];
+  
+  DroneRobot.prototype.devices = [
+    { name: 'drone', driver: 'ardrone', connection: 'ardrone' }, 
+    { name: 'window', driver: 'window', conneciton: 'opencv' }, 
+    { name: 'mat', driver: 'mat', conneciton: 'opencv' }
+  ];
+ 
+  DroneRobot.prototype.work = function(my) {
+    console.log("SHOW ME YOUR FACE!");
+  };
+ 
+  DroneRobot.prototype.faceOff = function() {
+    var my = this;
+    var self = this;
+    self.detect = false;
+    self.image = null;
+    my.drone.getPngStream().on('data', function(png) {
+      my.mat.readImage(png, function(err, img) {
+        self.image = img;
+        if (self.detect === false) {
+          my.window.show(img);
+        }
+      });
+    });
+    my.mat.on('facesDetected', function(err, im, faces) {
+      var biggest, center_x, f, face, turn;
+      biggest = 0;
+      face = null;
+      for (var i = 0; i < faces.length; i++) {
+        f = faces[i];
+        if (f.width > biggest) {
+          biggest = f.width;
+          face = f;
+        }
+      }
+      if (face !== null && (face.width <= 100 && face.width >= 45)) {
+        rest.get('http://192.168.1.1:3000/robots/digispark/devices/led/commands/ToggleC').on('complete', function(result) {
+          if (result instanceof Error) {
+            console.log('Error:', result.message);
+          } 
+        });
+        rest.get('http://127.0.0.1:3001/robots/mod/commands/WakeUp').on('complete', function(result) {
+          if (result instanceof Error) {
+            console.log('Error:', result.message);
+          } 
+        });
+        im.rectangle([face.x, face.y], [face.x + face.width, face.y + face.height], 
+          [0, 255, 0], 2);
+        center_x = im.width() * 0.5;
+        turn = -(face.x - center_x) / center_x;
+        console.log("turning: " + turn);
+        if (turn < 0) {
+          my.drone.clockwise(Math.abs(turn * 0.7));
+        } else {
+          my.drone.counterClockwise(Math.abs(turn * 0.7));
+        }
+      } else {
+        rest.get('http://192.168.1.1:3000/robots/digispark/devices/led/commands/OffC').on('complete', function(result) {
+          if (result instanceof Error) {
+            console.log('Error:', result.message);
+          } 
+        });
+        rest.get('http://127.0.0.1:3001/robots/mod/commands/Snooze').on('complete', function(result) {
+          if (result instanceof Error) {
+            console.log('Error:', result.message);
+          } 
+        });
+      }
+      my.window.show(im);
+    });
+    my.drone.takeoff();
+    after((8).seconds(), function() { my.drone.up(0.5); });
+    after((10).seconds(), function() { my.drone.hover(); });
+    after((13).seconds(), function() {
+      self.detect = true;
+      every(0.3.seconds(), function() {
+        my.drone.hover();
+        my.mat.detectFaces(self.image, haarcascade);
+      });
+      after((30).seconds(), function() { my.drone.land(); });
+    });
+  };
+ 
+  return DroneRobot;
+})();
+ 
+var robot = new DroneRobot;
+robot.name = "drone";
+ 
+Cylon.robot(robot);
+Cylon.api({ host: '192.168.1.3', port: '3000' });
+Cylon.start();
+          </code></pre>
+        </section>
+
+        <section>
+          <section>
+            <div class="image-container">
+              <img src="images/gobot-logo.png">
+            </div>
+            <h3>gobot.io</h3>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+package main
+ 
+import (
+  "github.com/hybridgroup/gobot"
+  "github.com/hybridgroup/gobot-digispark"
+  "github.com/hybridgroup/gobot-gpio"
+)
+ 
+func main() {
+  master := gobot.GobotMaster()
+  gobot.Api(master)
+ 
+  digispark := new(gobotDigispark.DigisparkAdaptor)
+  digispark.Name = "digispark"
+ 
+  led := gobotGPIO.NewLed(digispark)
+  led.Name = "led"
+  led.Pin = "2"
+ 
+  master.Robots = append(master.Robots, &gobot.Robot{
+    Name:        "digispark",
+    Connections: []gobot.Connection{digispark},
+    Devices:     []gobot.Device{red},
+  })
+ 
+  master.Start()
+}
+            </code></pre>            
+          </section>
+
+          <section>
+            <img src="http://localhost:8080/?action=stream">  
+          </section>          
+        </section>
+
+        <section>
           <h2>Was that fun?</h2>
         </section>
 
@@ -615,6 +782,16 @@ Cylon.start();
         <section>
           <h2>cylonjs.com</h2>
           <h3>@cylonjs</h3>
+        </section>
+
+        <section>
+          <h2>artoo.io</h2>
+          <h3>@artooio</h3>
+        </section>
+
+        <section>
+          <h2>gobot.io</h2>
+          <h3>@gobotio</h3>
         </section>
 
         <section>
@@ -648,6 +825,12 @@ Cylon.start();
         // parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
         // parallaxBackgroundSize: '2100px 900px',
 
+        leap: {
+          naturalSwipe   : true,    // Invert swipe gestures
+          pointerOpacity : 0.5,      // Set pointer opacity to 0.5
+          pointerColor   : '#d80000' // Red pointer
+        },
+
         // Optional libraries used to extend on reveal.js
         dependencies: [
           { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
@@ -655,7 +838,8 @@ Cylon.start();
           { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
           { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
           { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
-          { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+          { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'plugin/leap/leap.js', async: true }
         ]
       });
 
