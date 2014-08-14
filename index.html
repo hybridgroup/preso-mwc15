@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
 
-    <title>Cylon.js (cylonjs.com) - JSConf 2014</title>
+    <title>10 Rules Of RobotOps (robotops.com) - Distill 2014</title>
 
     <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
     <meta name="author" content="Hakim El Hattab">
@@ -39,19 +39,16 @@
       <!-- Any section element inside of this container is displayed as a slide -->
       <div class="slides">
         <section>
-          <div class="image-container">
-            <img src="images/cylonjs-logo.png">
-          </div>
-          <h2>The JavaScript Evolution Of Open Source Robotics</h2>
-          <h3>cylonjs.com</h3>
+          <h1>The 10 Rules Of RobotOps</h1>
+          <h3>robotops.com</h3>
         </section>
 
         <section>
-          <h2>Good Morning</h2>
+          <h2>Good Afternoon</h2>
         </section>
 
         <section>
-          <h2>This is @JSConf</h2>
+          <h2>This is @distill</h2>
         </section>
 
         <section>
@@ -87,73 +84,56 @@
         </section>
 
         <section>
-          <h2>JavaScript Robotics</h2>
+          <h2>The 10 Rules Of RobotOps</h2>
         </section>
 
         <section>
-          <div class="image-container">
-            <img src="images/maria.png">
-          </div>
-        </section>
-
-        <section>
-          <h2>
-            <blockquote>The future is already here, it's just not very evenly distributed</blockquote>
-            <figcaption>William Gibson</figcaption>
-          </h2>
-        </section>
-
-        <section>
+          <h2>Starring</h2>
           <div class="image-container">
             <img src="images/cylonjs-logo.png">
           </div>
         </section>
 
         <section>
-          <h2>A JavaScript Framework for Robotics & Physical Computing</h2>
+          <h2>Also Starring</h2>
+          <div class="image-container">
+            <img src="images/gobot-logo.png">
+          </div>
         </section>
 
         <section>
-          <h2>Multiple Hardware Devices</h2>
+          <h2>Featuring</h2>
+          <div class="image-container">
+            <img src="images/artoo-robot.png">
+            <img src="images/artoo-logo.png">
+          </div>
         </section>
 
         <section>
-          <h2>Different Hardware Devices</h2>
+          <h2>What's 'RobotOps'?</h2>
         </section>
 
         <section>
-          <h2>At the Same Time!</h2>
+          <h2>DevOps For Robots</h2>
         </section>
 
         <section>
-          <h2>Cylon.js makes programming devices as easy as web development</h2>
-        </section>
-
-        <section>
-          <h2>Built-in API</h2>
-        </section>
-
-        <section>
-          <h2>Test-Driven Robotics</h2>
-        </section>
-
-        <section>
-          <h2>Command Line Interface</h2>
-          <h3>gort.io</h3>
-        </section>
-
-        <section>
-          <h2>RobotOps - DevOps For Robots</h2>
-          <h3>robotops.com</h3>
-        </section>
-
-        <section>
-          <h2>Show Me The Demo!</h2>
+          <div class="image-container">
+            <img src="images/diagram-solution-of-things.png">
+          </div>
         </section>
 
         <section>
           <section>
-            <h2>Arduino</h2>
+            <h2>Declarative Code Syntax (#1)</h2>
+          </section>
+
+          <section>
+            <h2>Spark Core (Featuring Cylon.js)</h2>
+          </section>
+
+          <section>
+            <img src="http://localhost:8080/?action=stream">  
           </section>
 
           <section>
@@ -161,71 +141,110 @@
 var Cylon = require('cylon');
 
 Cylon.robot({
-  connection: { name: 'arduino', adaptor: 'firmata', port: '/dev/ttyACM0' },
-  device: { name: 'led', driver: 'led', pin: 13 },
+  connection: {
+    name: 'spark', adaptor: 'spark',
+    accessToken: 'ecc7a925d3b92bf1f9c942de25a14916a7e4a4bc',
+    deviceId: '53ff72065067544854310187'
+  },
+
+  device: 
+    {name: 'led', driver: 'led', pin: 'D7'}
+  },
 
   work: function(my) {
-    every((1).second(), function(){ my.led.toggle() });
+    every((1).second(), my.led.toggle);
   }
 }).start();
             </code></pre>
+          </section>
+        </section>
+
+
+        <section>
+          <section>
+            <h2>Command Line Interface (#2)</h2>
+          </section>
+
+          <section>
+            <h2>gort.io</h2>
+          </section>
+
+          <section>
+            <h2>Demo - Remote Update Spark Firmware</h2>
           </section>
 
           <section>
             <img src="http://localhost:8080/?action=stream">  
           </section>
-
         </section>
+
 
         <section>
           <section>
-            <h2>Tessel</h2>
+            <h2>Multiple Platforms/Devices (#3)</h2>
+          </section>
+
+          <section>
+            <h2>Demo - Spark Turtlebot</h2>
+          </section>
+
+          <section>
+            <img src="http://localhost:8080/?action=stream">  
           </section>
 
           <section>
             <pre><code data-trim>
 var Cylon = require('cylon');
- 
+
 Cylon.robot({
-  connection: { name: 'tessel', adaptor: 'tessel', port: 'GPIO' },
-  device: { name: 'led', driver: 'led', pin: 3 },
- 
+  connection: {
+    name: 'spark', adaptor: 'spark',
+    accessToken: 'ecc7a925d3b92bf1f9c942de25a14916a7e4a4bc',
+    deviceId: '53ff72065067544854310187'
+  },
+
+  devices: [
+    {name: 'leftMotor', driver: 'motor', pin: "D1"},
+    {name: 'rightMotor', driver: 'motor', pin: "A7"},
+    {name: 'leftDirection', driver: 'direct-pin', pin: "D3"},
+    {name: 'rightDirection', driver: 'direct-pin', pin: "D4"}
+  ],
+
   work: function(my) {
-    every((1).second(), function(){ my.led.toggle() });
+    my.leftDirection.digitalWrite(1);
+    my.rightDirection.digitalWrite(1);
+    my.leftMotor.speed(100);
+    my.rightMotor.speed(100);
+    after((10).seconds(), function() {
+      my.leftDirection.digitalWrite(0);
+      my.rightDirection.digitalWrite(0);
+    });
+    after((20).seconds(), function() {
+      my.leftDirection.digitalWrite(1);
+      my.rightDirection.digitalWrite(0);
+    });
+    after((21).seconds(), function() {
+      my.leftDirection.digitalWrite(0);
+      my.rightDirection.digitalWrite(1);
+    });
+    after((22).seconds(), function() {
+      my.leftDirection.digitalWrite(1);
+      my.rightDirection.digitalWrite(0);
+    });
+    after((23).seconds(), function() {
+      my.leftDirection.digitalWrite(0);
+      my.rightDirection.digitalWrite(1);
+    });
+    after((24).seconds(), function() {
+      my.leftMotor.turnOff();
+      my.rightMotor.turnOff();
+    });
   }
 }).start();
             </code></pre>
           </section>
-
-          <section>
-            <img src="http://localhost:8080/?action=stream">  
-          </section>          
         </section>
 
-        <section>
-          <section>
-            <h2>BeagleBone Black</h2>
-          </section>
-
-          <section>
-            <pre><code data-trim>
-var Cylon = require('cylon');
-
-Cylon.robot({
-  connection: { name: 'beaglebone', adaptor: 'beaglebone' },
-  device: { name: 'led', driver: 'led', pin: 'P9_12' },
-
-  work: function(my) {
-    every((1).second(), function(){ my.led.toggle() });
-  }
-}).start();
-            </code></pre>
-          </section>
-
-          <section>
-            <img src="http://localhost:8080/?action=stream">  
-          </section>          
-        </section>
 
         <section>
           <section>
@@ -233,399 +252,148 @@ Cylon.robot({
           </section>
 
           <section>
+            <h2>To win a Spark Core Starter Kit, tweet</h2>
+            <h2>@sparkdevices and @cylonjs</h2>
+          </section>
+
+          <section>
             <h2>To win a Sphero, tweet</h2>
             <h2>@gosphero and @cylonjs</h2>
           </section>
-
-          <section>
-            <h2>To win a Pebble, tweet</h2>
-            <h2>@pebble and @cylonjs</h2>
-          </section>
-
-          <section>
-            <h2>To win a Beaglebone Black, tweet</h2>
-            <h2>@beagleboardorg and @cylonjs</h2>
-          </section>
         </section>
+
 
         <section>
           <section>
-            <h2>Sphero + Leap Motion</h2>
+            <h2>Code Generators (#4)</h2>
           </section>
-
           <section>
-            <pre><code data-trim>
-var Cylon = require('cylon');
-
-Cylon.robot({
-  connections: [
-    { name: 'leapmotion', adaptor: 'leapmotion', port: '127.0.0.1:6437' },
-    { name: 'sphero', adaptor: 'sphero', port: '/dev/rfcomm0' }
-  ],
-  devices: [
-    { name: 'leapmotion', driver: 'leapmotion', connection: 'leapmotion' },
-    { name: 'sphero', driver: 'sphero', connection: 'sphero' }
-  ],
-  work: function(my) {
-    var y = 0;
-    var x = 0;
-    my.sphero.setBackLED(255)
-
-    my.leapmotion.on('hand', function(hand) {
-      y = hand.palmY.fromScale(50, 200).toScale(0, 90) | 0;
-      x = hand.palmX.fromScale(-30, 50).toScale(0, 90) | 0;
-    });
-
-    every((1).second(), function() {
-      my.sphero.setRGB(Math.floor(Math.random() * 16777216));
-    });
-    
-    every((0.01).second(), function() {
-      if (x != 0) {
-        if (x > 45) {
-          my.sphero.roll(40, x.fromScale(45, 90).toScale(90, 180) | 0);
-        } else {
-          my.sphero.roll(40, x.fromScale(0, 45).toScale(270, 359) | 0);
-        }
-      } else {
-        if (y > 45) {
-          my.sphero.roll(40, y.fromScale(45, 90).toScale(0, 90) | 0);
-        } else {
-          my.sphero.roll(40, y.fromScale(0, 45).toScale(180, 270) | 0);
-        }
-      }
-    });
-  }
-})
-
-Cylon.start();
-            </code></pre>
+            <h2>Demo - Generate New Robot</h2>
           </section>
-
         </section>
+
 
         <section>
           <section>
-            <h2>Sphero + Robeaux</h2>
+            <h2>Test-Driven Robotics (#5)</h2>
+          </section>
+          <section>
+            <h2>Demo - Run Tests</h2>
+          </section>
+        </section>
+
+
+        <section>
+          <section>
+            <h2>Built-In API (#6)</h2>
+          </section>
+          <section>
+            <h2>Common Protocol for Programming Physical I/O</h2>
+            <h2>cppp.io</h2>
+          </section>
+        </section>
+
+
+        <section>
+          <section>
+            <h2>Admin Tools (#7)</h2>
           </section>
 
           <section>
-            <h2>Conway's Game Of Life</h2>
+            <h2>robeaux.io</h2>
           </section>
 
           <section>
-            <div class="image-container">
-              <img src="images/conway-1.png">
-            </div>
-          </section>
-
-          <section>
-            <div class="image-container">
-              <img src="images/conway-2.png">
-            </div>
-          </section>
-
-          <section>
-            <h2>Conway's Game Of Life...
-            With ROBOTS!</h2>
-          </section>
-
-          <section>
-            <div class="image-container">
-              <img src="images/conway-3.png">
-            </div>
-          </section>
-
-          <section>
-            <pre><code data-trim>
-var Cylon = require('cylon');
-
-var bots = [
-  { port: '/dev/rfcomm0', name: 'Thelma' },
-  { port: '/dev/rfcomm1', name: 'Louise' },
-  { port: '/dev/rfcomm2', name: 'Grace' },
-  { port: '/dev/rfcomm3', name: 'Ada' },
-  { port: '/dev/rfcomm4', name: 'Mary' }
-];
-
-var Green = 0x00FF00;
-var Red = 0xFF0000;
-
-var ConwayRobot = (function() {
-  function ConwayRobot() {}
-
-  ConwayRobot.prototype.connection = { name: 'Sphero', adaptor: 'sphero' };
-  ConwayRobot.prototype.device = { name: 'sphero', driver: 'sphero' };
-
-  ConwayRobot.prototype.born = function() {
-    this.contacts = 0;
-    this.age = 0;
-    this.alive = true;
-    this.life();
-    this.move();
-  };
-
-  ConwayRobot.prototype.move = function() {
-    this.sphero.roll(60, Math.floor(Math.random() * 360));
-  };
-
-  ConwayRobot.prototype.life = function() {
-    this.alive = true;
-    this.sphero.setRGB(Green);
-  };
-
-  ConwayRobot.prototype.death = function() {
-    this.alive = false;
-    this.sphero.setRGB(Red);
-    this.sphero.stop();
-  };
-
-  ConwayRobot.prototype.enoughContacts = function() {
-    return (this.contacts > 2 && this.contacts < 7);
-  };
-
-  ConwayRobot.prototype.birthday = function() {
-    this.age += 1;
-
-    console.log("Happy birthday, " + this.name + ". You are " + this.age + " and had " + this.contacts + " contacts.");
-
-    if (this.enoughContacts()) {
-      if (this.alive == false) { this.rebirth(); }
-    } else {
-      this.death();
-    }
-
-    this.contacts = 0;
-  };
-
-  ConwayRobot.prototype.work = function(me) {
-    var self = this;
-    me.sphero.on('connect', function() {
-        me.sphero.detectCollisions();
-        me.born();
-    });
-
-    me.sphero.on('collision', function() {
-      self.contacts += 1;
-    });
-
-    every((3).seconds(), function() {
-      if (me.alive != false) { me.move(); }
-    });
-
-    every((10).seconds(), function() {
-      if (me.alive != false) { 
-        me.birthday(); 
-      }
-    });
-  };
-
-  return ConwayRobot;
-
-})();
-
-for (var i = 0; i < bots.length; i++) {
-  var bot = bots[i];
-  var robot = new ConwayRobot;
-
-  robot.connection.port = bot.port;
-  robot.name = bot.name;
-
-  Cylon.robot(robot);
-}
-
-Cylon.api({host: '192.168.1.116', port: '8080', ssl:  false});
-
-Cylon.start();
-            </code></pre>
-          </section>
-
-          <section>
-            <h2><a href='http://10.22.25.22:8080' target="_new">Robeaux - Universal Robot API</a></h2>
+            <h2>Demo - Raspberry Pi Robot (RaPiRo)</h2>
           </section>
 
           <section>
             <img src="http://localhost:8080/?action=stream">  
-          </section>          
-        </section>
-
-        <section>
-          <section>
-            <h2>ARDrone + OpenCV + PS3 Controller + <a href='file:///home/ron/Development/gobot/brain/index.html' target="_new">Neurosky</a></h2>
           </section>
+
           <section>
-            <pre><code data-trim>
-var Cylon = require('cylon');
-
-Cylon.robot({
-  connections: [
-    {name: 'opencv', adaptor: 'opencv'},
-    {name: 'dualshock3', adaptor: 'joystick', controller: 'dualshock3'}, 
-    {name: 'ardrone', adaptor: 'ardrone', port: '192.168.1.1'}
-  ],
-  devices: [
-    {name: 'mat', driver: 'mat', conneciton: 'opencv' },
-    {name: 'window', driver: 'window', conneciton: 'opencv'},
-    {name: 'controller', driver: 'dualshock3', connection: 'dualshock3'}, 
-    {name: 'drone', driver: 'ardrone', connection: 'ardrone'}
-  ],
-  validate_pitch: function(data, offset) {
-    var value;
-    value = Math.abs(data) / offset;
-    if (value >= 0.1) {
-      if (value <= 1.0) {
-        return Math.round(value * 100.0) / 100.0;
-      } else {
-        return 1.0;
-      }
-    } else {
-      return 0.0;
-    }
-  },
-  work: function(my) {
-    var self = this; 
-    self.offset = 125.0;
-    self.right_stick = {
-      x: self.offset,
-      y: self.offset
-    };
-    self.left_stick = {
-      x: self.offset,
-      y: self.offset
-    };
-
-    my.drone.getPngStream().on('data', function(png) {
-      my.mat.readImage(png, function(err, img) {
-        my.window.show(img);
-      });
-    });
-    my.controller.on("square:press", function(data) {
-      my.drone.takeoff();
-    });
-    my.controller.on("triangle:press", function(data) { 
-      my.drone.hover()
-    });
-    my.controller.on("x:press", function(data) {
-      my.drone.land()
-    });
-    my.controller.on("right:move", function(data) {
-      self.right_stick = data;
-    });
-    my.controller.on("left:move", function(data) {
-      self.left_stick = data;
-    });
-    every(0, function() {
-      var pair;
-      pair = self.left_stick;
-      if (pair.y < self.offset - 5) {
-        my.drone.front(my.validate_pitch(pair.y - self.offset, self.offset));
-      } else if (pair.y > self.offset + 5) {
-        my.drone.back(my.validate_pitch(pair.y - self.offset, self.offset));
-      }
-      if (pair.x > self.offset + 5) {
-        my.drone.right(my.validate_pitch(pair.x - self.offset, self.offset));
-      } else if (pair.x < self.offset - 5) {
-        my.drone.left(my.validate_pitch(pair.x - self.offset, self.offset));
-      }
-    });
-    every(0, function() {
-      var pair;
-      pair = self.right_stick;
-      if (pair.y < self.offset - 5) {
-        my.drone.up(my.validate_pitch(pair.y - self.offset, self.offset));
-      } else if (pair.y > self.offset + 5) {
-        my.drone.down(my.validate_pitch(pair.y - self.offset, self.offset));
-      }
-      if (pair.x > self.offset + 20) {
-        my.drone.clockwise(my.validate_pitch(pair.x - self.offset, self.offset));
-      } else if (pair.x < self.offset - 20) {
-        my.drone.counterClockwise(my.validate_pitch(pair.x - self.offset, self.offset));
-      }
-    });
-    every((0.1).seconds(), my.drone.hover);
-  }
-});
-
-Cylon.start();
-            </code></pre>
-          </section>
-          <section>
-            <pre><code data-trim>
-var Cylon = require('cylon');
-
-Cylon.robot({
-  connection:
-    {name: 'neurosky', adaptor: 'neurosky', port: '/dev/rfcomm0'},
-
-  device:
-    {name: 'headset', driver: 'neurosky'},
-
-  work: function(my) {
-    my.headset.on('eeg', function(data) {
-      Logger.info(data);
-    });
-  }
-});
-
-Cylon.start();
-            </code></pre>            
+            <h2><a href='http://192.168.1.9:8080' target="_blank">Robeaux Demo</a></h2>
           </section>
         </section>
 
-        <section>
-          <h2>Pebble (Featuring Artoo) + </h2>
-          <h2>ARDrone + OpenCV + </h2>
-          <h2>Sphero + DigiSpark (Featuring Gobot)</h2>
-        </section>
 
         <section>
           <section>
-            <div class="image-container">
-              <img src="images/artoo-logo.png">
-              <img src="images/artoo-robot.png">
-            </div>
-            <h3>artoo.io</h3>
+            <h2>Documentation & Support (#8)</h2>
+          </section>
+        </section>
+
+
+        <section>
+          <section>
+            <h2>Security (#9)</h2>
+          </section>
+
+          <section>
+            <h2>3DRobotics Iris (Featuring Gobot)</h2>
+          </section>
+
+          <section>
+            <img src="http://localhost:8080/?action=stream">  
+          </section>
+
+          <section>
+            <h2><a href='http://192.168.1.5:3000/mavlink/index.html' target="_blank">Iris Demo</a></h2>
+          </section>
+        </section>
+
+
+        <section>
+          <section>
+            <h2>Swarms (#10)</h2>
+          </section>
+
+          <section>
+            <h2>Pebble (Featuring Artoo)</h2>
+            <h2>ARDrone + OpenCV (Featuring Cylon.js)</h2>
+            <h2>Sphero + DigiSpark (Featuring Gobot)</h2>
+          </section>
+
+          <section>
+            <img src="http://localhost:8080/?action=stream">  
           </section>
 
           <section>
             <pre><code data-trim>
 require 'artoo'
 require 'http'
- 
+
 connection :pebble, :adaptor => :pebble
 device     :watch,  :driver  => :pebble, :name => 'pebble'
- 
+
 api :host => '0.0.0.0', :port => '8080'
- 
+
 name 'pebble'
- 
+
 def button_push(*data)
   unless data[1].nil?
-    puts "Posting to Cylon"
-    HTTP[:content_type => 'application/json'].get "https://192.168.1.3:3000/robots/drone/commands/faceOff"
-    p "#{data[1]} button pushed"
+    HTTP[:content_type => 'application/json'].get "http://192.168.1.3:3000/api/robots/drone/commands/face_off"
   end
 end
- 
+
 work do
   pebble.send_notification("Hello Pebble!")
   on pebble, :button => :button_push
 end
             </code></pre>
           </section>
-        </section>
-          
-        <section>
-          <pre><code data-trim>
+
+          <section>
+            <pre><code data-trim>
 var Cylon = require('cylon');
 var rest = require('restler');
 var haarcascade = "" + __dirname + "/haarcascade_frontalface_alt.xml";
  
 var DroneRobot = (function(){ 
-
+ 
   function DroneRobot() {} 
  
-  DroneRobot.prototype.commands = ["faceOff"];
+  DroneRobot.prototype.commands = ["face_off"];
  
   DroneRobot.prototype.connections = [
     { name: 'opencv', adaptor: 'opencv' }, 
@@ -642,7 +410,7 @@ var DroneRobot = (function(){
     console.log("SHOW ME YOUR FACE!");
   };
  
-  DroneRobot.prototype.faceOff = function() {
+  DroneRobot.prototype.face_off = function() {
     var my = this;
     var self = this;
     self.detect = false;
@@ -667,12 +435,12 @@ var DroneRobot = (function(){
         }
       }
       if (face !== null && (face.width <= 100 && face.width >= 45)) {
-        rest.get('http://192.168.1.1:3000/robots/digispark/devices/led/commands/ToggleC').on('complete', function(result) {
+        rest.get('http://192.168.1.1:3000/api/robots/digispark/devices/led/commands/Toggle').on('complete', function(result) {
           if (result instanceof Error) {
             console.log('Error:', result.message);
           } 
         });
-        rest.get('http://127.0.0.1:3001/robots/mod/commands/WakeUp').on('complete', function(result) {
+        rest.get('http://127.0.0.1:3001/api/robots/mod/commands/wake_up').on('complete', function(result) {
           if (result instanceof Error) {
             console.log('Error:', result.message);
           } 
@@ -688,12 +456,12 @@ var DroneRobot = (function(){
           my.drone.counterClockwise(Math.abs(turn * 0.7));
         }
       } else {
-        rest.get('http://192.168.1.1:3000/robots/digispark/devices/led/commands/OffC').on('complete', function(result) {
+        rest.get('http://192.168.1.1:3000/api/robots/digispark/devices/led/commands/Off').on('complete', function(result) {
           if (result instanceof Error) {
             console.log('Error:', result.message);
           } 
         });
-        rest.get('http://127.0.0.1:3001/robots/mod/commands/Snooze').on('complete', function(result) {
+        rest.get('http://127.0.0.1:3001/api/robots/mod/commands/snooze').on('complete', function(result) {
           if (result instanceof Error) {
             console.log('Error:', result.message);
           } 
@@ -721,67 +489,119 @@ var robot = new DroneRobot;
 robot.name = "drone";
  
 Cylon.robot(robot);
-Cylon.api({ host: '192.168.1.3', port: '3000' });
+Cylon.api({ host: '192.168.1.3', port: '3000', ssl: false });
 Cylon.start();
-          </code></pre>
-        </section>
-
-        <section>
-          <section>
-            <div class="image-container">
-              <img src="images/gobot-logo.png">
-            </div>
-            <h3>gobot.io</h3>
+            </code></pre>
           </section>
 
           <section>
             <pre><code data-trim>
 package main
- 
+
 import (
   "github.com/hybridgroup/gobot"
-  "github.com/hybridgroup/gobot-digispark"
-  "github.com/hybridgroup/gobot-gpio"
+  "github.com/hybridgroup/gobot/api"
+  "github.com/hybridgroup/gobot/platforms/digispark"
+  "github.com/hybridgroup/gobot/platforms/gpio"
 )
- 
+
 func main() {
-  master := gobot.GobotMaster()
-  gobot.Api(master)
- 
-  digispark := new(gobotDigispark.DigisparkAdaptor)
-  digispark.Name = "digispark"
- 
-  led := gobotGPIO.NewLed(digispark)
-  led.Name = "led"
-  led.Pin = "2"
- 
-  master.Robots = append(master.Robots, &gobot.Robot{
-    Name:        "digispark",
-    Connections: []gobot.Connection{digispark},
-    Devices:     []gobot.Device{red},
-  })
- 
-  master.Start()
+  gbot := gobot.NewGobot()
+  api.NewAPI(gbot).Start()
+
+  digi := digispark.NewDigisparkAdaptor("digispark")
+
+  led := gpio.NewLedDriver(digi, "led", "2")
+
+  gbot.AddRobot(
+    gobot.NewRobot("digispark", []gobot.Connection{digi}, []gobot.Device{led}),
+  )
+
+  gbot.Start()
 }
-            </code></pre>            
+            </code></pre>
           </section>
 
           <section>
-            <img src="http://localhost:8080/?action=stream">  
-          </section>          
+            <pre><code data-trim>
+package main
+
+import (
+  "fmt"
+
+  "github.com/hybridgroup/gobot"
+  "github.com/hybridgroup/gobot/api"
+  "github.com/hybridgroup/gobot/platforms/sphero"
+)
+
+func main() {
+  gbot := gobot.NewGobot()
+  a := api.NewAPI(gbot)
+  a.Port = "3001"
+  a.Start()
+
+  spheros := map[string]string{
+    "/dev/rfcomm0": "Thelma",
+    "/dev/rfcomm1": "Louise",
+    "/dev/rfcomm2": "Grace",
+  }
+
+  connections := []gobot.Connection{}
+  devices := []gobot.Device{}
+
+  for port, name := range spheros {
+    adaptor := sphero.NewSpheroAdaptor("Sphero", port)
+    ball := sphero.NewSpheroDriver(adaptor, name)
+
+    connections = append(connections, adaptor)
+    devices = append(devices, ball)
+  }
+
+  mod := gbot.AddRobot(
+    gobot.NewRobot("mod", connections, devices, func() { fmt.Println("Ready!") }),
+  )
+
+  mod.AddCommand("wake_up", func(params map[string]interface{}) interface{} {
+    mod.Devices().Each(func(device gobot.Device) {
+      device.(*sphero.SpheroDriver).SetRGB(uint8(gobot.Rand(255)), uint8(gobot.Rand(255)), uint8(gobot.Rand(255)))
+      device.(*sphero.SpheroDriver).Roll(uint8(70), uint16(gobot.Rand(360)))
+    })
+    return true
+  })
+
+  mod.AddCommand("snooze", func(params map[string]interface{}) interface{} {
+    mod.Devices().Each(func(device gobot.Device) {
+      device.(*sphero.SpheroDriver).SetRGB(uint8(255), uint8(0), uint8(0))
+      device.(*sphero.SpheroDriver).Roll(uint8(0), uint16(0))
+    })
+    return true
+  })
+
+  gbot.Start()
+}
+            </code></pre>
+          </section>
         </section>
+
 
         <section>
           <h2>Was that fun?</h2>
         </section>
 
+
         <section>
           <h2>Join the Robot Evolution!</h2>
         </section>
 
+
         <section>
           <h2>cylonjs.com</h2>
           <h3>@cylonjs</h3>
+        </section>
+
+        <section>
+          <h2>gobot.io</h2>
+          <h3>@gobotio</h3>
         </section>
 
         <section>
@@ -790,8 +610,11 @@ func main() {
         </section>
 
         <section>
-          <h2>gobot.io</h2>
-          <h3>@gobotio</h3>
+          <h2>gort.io</h2>
+        </section>
+
+        <section>
+          <h2>robotops.com</h2>
         </section>
 
         <section>
