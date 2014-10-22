@@ -104,6 +104,161 @@
           </div>
         </section>
 
+        <section>
+          <section>
+            <h2>Arduino</h2>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+var Cylon = require('cylon');
+
+Cylon.robot({
+  connection: { name: 'arduino', adaptor: 'firmata', port: '/dev/ttyACM0' },
+  device: { name: 'led', driver: 'led', pin: 13 },
+
+  work: function(my) {
+    every((1).second(), function(){ my.led.toggle() });
+  }
+}).start();
+            </code></pre>
+          </section>
+
+          <section>
+            <img src="http://localhost:8080/?action=stream">  
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>Spark</h2>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+// code here...
+            </code></pre>
+          </section>
+
+          <section>
+            <img src="http://localhost:8080/?action=stream">  
+          </section>          
+        </section>
+
+        <section>
+          <section>
+            <h2>Intel Edison</h2>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+// code here...
+            </code></pre>
+          </section>
+
+          <section>
+            <img src="http://localhost:8080/?action=stream">  
+          </section>          
+        </section>
+
+
+        <section>
+          <section>
+            <h2>Choose Your Own Hardware Adventure!</h2>
+          </section>
+
+          <section>
+            <h2>To win a Sphero, tweet</h2>
+            <h2>@gosphero and @cylonjs</h2>
+          </section>
+
+          <section>
+            <h2>To win a Spark Core, tweet</h2>
+            <h2>@spark_io and @cylonjs</h2>
+          </section>
+        </section>
+
+
+        <section>
+          <h2>It All Starts With A Customer...</h2>
+        </section>
+
+        <section>
+          <h2>Brewforce</h2>
+        </section>
+
+        <section>
+          <h2>Connected Devices</h2>
+        </section>
+
+
+        <section>
+          <section>
+            <h2>Drink Dispenser Demo</h2>
+            <h3>Intel Edison + Salesforce</h3>
+          </section>
+
+          <section>
+            <div class="image-container">
+              <img src="images/diagram1.jpg">
+            </div>
+          </section>
+
+          <section>
+            <img src="http://localhost:8080/?action=stream">  
+          </section>
+        </section>
+
+
+        <section>
+          <h2>Wearables</h2>
+        </section>
+
+
+        <section>
+          <section>
+            <h2>Wearable Demo</h2>
+            <h3>Intel Edison + Pebble + Salesforce</h3>
+          </section>
+
+          <section>
+            <div class="image-container">
+              <img src="images/diagram2.jpg">
+            </div>
+          </section>
+
+          <section>
+            <img src="http://localhost:8080/?action=stream">  
+          </section>
+
+          <section>
+            <h3><a href='http://127.0.0.1:4567' target="_blank">Brewforce Admin Page</a></h3>
+          </section>
+        </section>
+
+        <section>
+          <h2>Robots</h2>
+        </section>
+
+        <section>
+          <section>
+            <h2>Drone Demo</h2>
+            <h3>Intel Edison + Salesforce + ARDrone + Pebble (Featuring Cylon.js)</h3>
+            <h3>DigiSpark (Featuring Gobot)</h3>
+          </section>
+
+          <section>
+            <div class="image-container">
+              <img src="images/diagram3.jpg">
+            </div>
+          </section>
+
+          <section>
+            <img src="http://localhost:8080/?action=stream">  
+          </section>
+        </section>
+
+
 
         <section>
           <h2>Was that fun?</h2>
