@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
 
-    <title>Full Stack Robotics - FullStack 2014</title>
+    <title>Full Stack Robotics - SCaLE 13x</title>
 
     <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
     <meta name="author" content="Hakim El Hattab">
@@ -44,11 +44,11 @@
         </section>
 
         <section>
-          <h2>Good Afternoon</h2>
+          <h2>Good Evening</h2>
         </section>
 
         <section>
-          <h2>This is #fullstackcon</h2>
+          <h2>This is #scale13x</h2>
         </section>
 
         <section>
@@ -87,6 +87,16 @@
           <h2>Full Stack Robotics</h2>
         </section>
 
+        <section data-background="images/robot-pancakes.gif">
+          <h2>Full Stack Robotics?</h2>
+        </section>
+
+        <section>
+          <div class="image-container">
+            <img src="images/diagram-solution-of-things.png">
+          </div>
+        </section>
+
         <section>
           <h2>Starring</h2>
           <div class="image-container">
@@ -94,13 +104,23 @@
           </div>
         </section>
 
-        <section data-background="images/robot-pancakes.gif">
-          <h2>What Is 'Full Stack Robotics'?</h2>
+        <section>
+          <h2>Also Starring</h2>
+          <div class="image-container">
+            <img src="images/gobot-logo.png">
+          </div>
+        </section>
+
+
+        <section>
+          <div class="image-container">
+            <img src="images/arch-1.png">
+          </div>
         </section>
 
         <section>
           <div class="image-container">
-            <img src="images/diagram-solution-of-things.png">
+            <img src="images/arch-2.png">
           </div>
         </section>
 
@@ -114,20 +134,16 @@
 var Cylon = require('cylon');
 
 Cylon.robot({
-  connection: { 
-    name: 'arduino', 
-    adaptor: 'firmata', 
-    port: '/dev/ttyACM0' 
+  connections: { 
+    arduino: {adaptor: 'firmata', port: '/dev/ttyACM0'}
   },
   
-  device: { 
-    name: 'led', 
-    driver: 'led', 
-    pin: 13 
+  devices: { 
+    led: {driver: 'led', pin: 13}
   },
 
   work: function(my) {
-    every((1).second(), function(){ my.led.toggle() });
+    every((1).second(), my.led.toggle);
   }
 }).start();
             </code></pre>
@@ -140,7 +156,7 @@ Cylon.robot({
 
         <section>
           <section>
-            <h2>Spark</h2>
+            <h2>Beaglebone Black</h2>
           </section>
 
           <section>
@@ -148,17 +164,15 @@ Cylon.robot({
 var Cylon = require('cylon');
 
 Cylon.robot({
-  connection: {
-    name: 'spark', 
-    adaptor: 'spark',
-    accessToken: 'XXXYYYZZZ',
-    deviceId: '1234XXX7890'
+  connection: { 
+    name: 'beaglebone', 
+    adaptor: 'beaglebone' 
   },
-
-  device: {
+  
+  device: { 
     name: 'led', 
     driver: 'led', 
-    pin: 'D7'
+    pin: 'P9_12' 
   },
 
   work: function(my) {
@@ -229,448 +243,227 @@ Cylon.robot({
         </section>
 
         <section>
-          <h2>Brewforce</h2>
+          <section>
+            <h2>Brewmaster</h2>
+          </section>
 
           <section>
             <div class="image-container">
-              <img src="images/diagram-connected-cylons1.jpg">
+              <img src="images/diagram-connected.jpg">
             </div>
           </section>
-
-          <section>
-            <pre><code data-trim>
-var Cylon = require('cylon');
-
-Cylon.config({
-  api: {
-    host: '0.0.0.0', port: '8080', ssl:  false
-  }
-})
- 
-Cylon.api();
-
-Cylon.robot({
-  name: 'brewforce',
-  connections: [
-    { name: 'pebble', adaptor: 'pebble' },
-    { name: 'edison', adaptor: 'intel-iot' },
-    { 
-      name: 'sfcon', 
-      adaptor: 'force', 
-      sfuser: process.env.SF_USERNAME, 
-      sfpass: process.env.SF_SECURITY_TOKEN 
-    }
-  ],
-  devices: [
-    { name: 'pump', driver: 'direct-pin', pin: 6, connection: 'edison' },
-    { name: 'tap', driver: 'button', pin: 4, connection: 'edison' },
-    { name: 'fault', driver: 'button', pin: 2, connection: 'edison' },
-    { name: 'pebble', driver: 'pebble', connection: 'pebble' },
-    { name: 'salesforce', driver: 'force', connection: 'sfcon' }
-  ],
-  work: function() {
-    this.tap.on('press', function() {
-      if (!this.pumping) {
-        this.activatePump();
-      }
-    }.bind(this));
-
-    this.fault.on('press', function() {
-      this.reportFault();
-    }.bind(this));
-  },
-
-  served: 0,
-  pumping: false,
-  dispenserId: 5,
-  droneId: 4,
-
-  activatePump: function() {
-    this.pumping = true;
-    this.pump.digitalWrite(1);
-    this.served += 1;
-    var date = new Date(),
-        dateStr = date.toISOString(),
-        toSend = { 
-          dispenserId: this.dispenserId,
-          drinkId: this.served,
-          event: 'online',
-          eventTimestamp: dateStr,
-          details: 'dispenser'
-        };
-    
-    this.salesforce.post('/Drink/', toSend, function(err, data) {
-      console.log('Err:', err);
-      console.log('Data:', data);
-    });
-
-    setTimeout(function() {
-      this.pump.digitalWrite(0);
-      this.pumping = false;
-    }.bind(this), 2000);
-
-    console.log("Total customers served: " + toSend.drinkId);
-    this.pebble.send_notification("Total customers served: " + toSend.drinkId);    
-  },
-
-  reportFault: function() {
-    console.log("Pushing fault to SF.....");
-    var date = new Date(),
-        dateStr = date.toISOString(),
-        toSend = { dispenserId: this.dispenserId,
-                   drinkId: this.served,
-                   event: 'error',
-                   eventTimestamp: dateStr,
-                   details: 'dispenser'
-        };
-
-    this.salesforce.post('/Drink/', toSend, function(err, data) {
-      console.log('Err:', err);
-      console.log('Data:', data);
-    });
-
-    this.pebble.send_notification("there was an error");
-  },
-  
-  airDrop: function() {
-    var date = new Date();
-    var dateStr = date.toISOString();
-    var toSend = { 
-      dispenserId: this.droneId,
-      drinkId: this.served,
-      event: 'en route',
-      eventTimestamp: dateStr,
-      details: 'drone'
-    };
-
-    this.salesforce.post('/Drink/', toSend, function(err, data) {
-      console.log('airDrop Err:', err);
-      console.log('airDrop Data:', data);
-    });
-
-    this.pebble.send_notification("delivery sent by drone");
-  },
-
-  delivered: function() {
-    var date = new Date();
-    var dateStr = date.toISOString();
-    var toSend = { 
-      dispenserId: this.droneId,
-      drinkId: this.served,
-      event: 'delivery complete',
-      eventTimestamp: dateStr,
-      details: 'drone'
-    };
-
-    this.salesforce.post('/Drink/', toSend, function(err, data) {
-      console.log('delivered Err:', err);
-      console.log('delivered Data:', data);
-    });
-
-    this.pebble.send_notification("delivery sent by drone");
-  },
-
-  commands: function() {
-    return {
-      air_drop: this.airDrop,
-      delivered: this.delivered,
-      report_fault: this.reportFault,
-      activate_pump: this.activatePump
-    };
-  }  
-}).start();
-            </code></pre>
-          </section>
-
         </section>
 
         <section>
-          <h2>Connected Devices</h2>
+          <h2>MQTT</h2>
+          <h3>mqtt.org</h3>
         </section>
-
 
         <section>
           <section>
             <h2>Drink Dispenser</h2>
-            <h3>Intel Edison + Salesforce</h3>
+            <h3>Intel Edison + MQTT</h3>
           </section>
 
           <section>
             <div class="image-container">
-              <img src="images/diagram-connected-cylons1.jpg">
+              <img src="images/diagram-connected1.jpg">
             </div>
           </section>
 
           <section>
             <pre><code data-trim>
-  activatePump: function() {
-    this.pumping = true;
-    this.pump.digitalWrite(1);
-    this.served += 1;
-    var date = new Date(),
-        dateStr = date.toISOString(),
-        toSend = { 
-          dispenserId: this.dispenserId,
-          drinkId: this.served,
-          event: 'online',
-          eventTimestamp: dateStr,
-          details: 'dispenser'
-        };
-    
-    this.salesforce.post('/Drink/', toSend, function(err, data) {
-      console.log('Err:', err);
-      console.log('Data:', data);
-    });
+package main
 
-    setTimeout(function() {
-      this.pump.digitalWrite(0);
-      this.pumping = false;
-    }.bind(this), 2000);
+import (
+  "fmt"
+  "net/url"
+  "time"
 
-    console.log("Total customers served: " + toSend.drinkId);
-    this.pebble.send_notification("Total customers served: " + toSend.drinkId);    
-  },
-            </code></pre>
-          </section>
+  "github.com/hybridgroup/gobot"
+  "github.com/hybridgroup/gobot/platforms/gpio"
+  "github.com/hybridgroup/gobot/platforms/intel-iot/edison"
+  "github.com/hybridgroup/gobot/platforms/mqtt"
+)
 
-          <section>
-            <img src="http://localhost:8080/?action=stream">  
-          </section>
-        </section>
+func main() {
+  gbot := gobot.NewGobot()
 
+  e := edison.NewEdisonAdaptor("edison")
+  m := mqtt.NewMqttAdaptor("mqtt", "tcp://192.168.0.90:1883", "pump")
 
-        <section>
-          <h2>Wearables</h2>
-        </section>
+  lever := gpio.NewButtonDriver(e, "lever", "2")
+  fault := gpio.NewButtonDriver(e, "fault", "4")
+  pump := gpio.NewDirectPinDriver(e, "pump", "13")
 
-        <section>
-          <section>
-            <h2>Wearable Demo</h2>
-            <h3>Intel Edison + Pebble + Salesforce</h3>
-          </section>
-
-          <section>
-            <div class="image-container">
-              <img src="images/diagram-connected-cylons2.jpg">
-            </div>
-          </section>
-
-          <section>
-            <pre><code data-trim>
-  reportFault: function() {
-    console.log("Pushing fault to SF.....");
-    var date = new Date(),
-        dateStr = date.toISOString(),
-        toSend = { dispenserId: this.dispenserId,
-                   drinkId: this.served,
-                   event: 'error',
-                   eventTimestamp: dateStr,
-                   details: 'dispenser'
-        };
-
-    this.salesforce.post('/Drink/', toSend, function(err, data) {
-      console.log('Err:', err);
-      console.log('Data:', data);
-    });
-
-    this.pebble.send_notification("there was an error");
-  },
-            </code></pre>
-          </section>
-
-          <section>
-            <img src="http://localhost:8080/?action=stream">  
-          </section>
-        </section>
-
-
-        <section>
-          <h2>Mobile</h2>
-        </section>
-
-        <section>
-          <section>
-            <h2>Mobile Demo</h2>
-            <h3>Intel Edison + Pebble + Commander + Salesforce</h3>
-          </section>
-
-          <section>
-            <div class="image-container">
-              <img src="images/diagram-connected-cylons3.jpg">
-            </div>
-          </section>
-
-          <section>
-            <pre><code data-trim>
-Cylon.config({
-  api: {
-    host: '0.0.0.0', port: '8080', ssl:  false
-  }
-})
- 
-Cylon.api();
-            </code></pre>
-          </section>
-          <section>
-            <pre><code data-trim>
-  commands: function() {
-    return {
-      air_drop: this.airDrop,
-      delivered: this.delivered,
-      report_fault: this.reportFault,
-      activate_pump: this.activatePump
-    };
-  }
-            </code></pre>
-          </section>
-
-          <section>
-            <img src="http://localhost:8080/?action=stream">  
-          </section>
-        </section>
-
-
-        <section>
-          <h2>Robots</h2>
-        </section>
-
-        <section>
-          <section>
-            <h2>Drone Demo</h2>
-            <h3>Intel Edison + Salesforce + ARDrone + Commander + Pebble (Featuring Cylon.js)</h3>
-            <h3>DigiSpark (Featuring Gobot)</h3>
-          </section>
-
-          <section>
-            <div class="image-container">
-              <img src="images/diagram-connected-cylons4.jpg">
-            </div>
-          </section>
-
-          <section>
-            <pre><code data-trim>
-  airDrop: function() {
-    var date = new Date();
-    var dateStr = date.toISOString();
-    var toSend = { 
-      dispenserId: this.droneId,
-      drinkId: this.served,
-      event: 'en route',
-      eventTimestamp: dateStr,
-      details: 'drone'
-    };
-
-    this.salesforce.post('/Drink/', toSend, function(err, data) {
-      console.log('airDrop Err:', err);
-      console.log('airDrop Data:', data);
-    });
-
-    this.pebble.send_notification("delivery sent by drone");
-  },
-            </code></pre>
-          </section>
-
-          <section>
-            <pre><code data-trim>
-var cylon = require('cylon');
-var restler = require('restler');
-
-cylon.robot({
-  connections: [
-    {name: 'dualshock3', adaptor: 'joystick'}, 
-    {name: 'ardrone', adaptor: 'ardrone', port: '192.168.1.1'}
-  ],
-  devices: [
-    {name: 'controller', driver: 'dualshock-3', connection: 'dualshock3'}, 
-    {name: 'drone', driver: 'ardrone', connection: 'ardrone'}
-  ]
-})
-  .on("ready", function(bot) {
-    var offset = 32767.0;
-    var rightStick = {
-      x: 0.0,
-      y: 0.0
-    };
-    var leftStick = {
-      x: 0.0,
-      y: 0.0
-    };
-    bot.controller.on("circle:press", function() {
-      restler.get('http://192.168.1.1:3000/commands/drop_package')
-        .on('complete', function(result) {
-          console.log("response from drone: " + JSON.stringify(result));
-        });
-    });
-    bot.controller.on("square:press", function() {
-      bot.drone.takeoff();
-    });
-    bot.controller.on("triangle:press", function() {
-      bot.drone.hover();
-    });
-    bot.controller.on("x:press", function() {
-      bot.drone.land();
-    });
-    bot.controller.on("right_x:move", function(data) {
-      rightStick.x = data;
-    });
-    bot.controller.on("right_y:move", function(data) {
-      rightStick.y = data;
-    });
-    bot.controller.on("left_x:move", function(data) {
-      leftStick.x = data;
-    });
-    bot.controller.on("left_y:move", function(data) {
-      leftStick.y = data;
-    });
-
-    setInterval(function() {
-      var pair = leftStick;
-      if (pair.y < 5) {
-        bot.drone.front(validatePitch(pair.y, offset));
-      } else if (pair.y > 5) {
-        bot.drone.back(validatePitch(pair.y, offset));
-      }
-      if (pair.x > 5) {
-        bot.drone.right(validatePitch(pair.x, offset));
-      } else if (pair.x < 5) {
-        bot.drone.left(validatePitch(pair.x, offset));
-      }
-    }, 0);
-
-    setInterval(function() {
-      var pair = rightStick;
-      if (pair.y < 5) {
-        bot.drone.up(validatePitch(pair.y, offset));
-      } else if (pair.y > 5) {
-        bot.drone.down(validatePitch(pair.y, offset));
-      }
-      if (pair.x > 20) {
-        bot.drone.clockwise(validatePitch(pair.x, offset));
-      } else if (pair.x < 20) {
-        bot.drone.counterClockwise(validatePitch(pair.x, offset));
-      }
-    }, 0);
-
-    setInterval(function() {
-      bot.drone.hover();
-    }, 10);
-  })
-  .on('error', function(err) {
-    console.log(err);
-  })
-  .start();
-
-function validatePitch(data, offset) {
-  var value = Math.abs(data) / offset;
-  if (value >= 0.1) {
-    if (value <= 1.0) {
-      return Math.round(value * 100.0) / 100.0;
-    } else {
-      return 1.0;
+  work := func() {
+    dgram := url.Values{
+      "name":         {"Four"},
+      "dispenser_id": {"4"},
+      "drink_id":     {"0"},
+      "event":        {"online"},
+      "details":      {"dispenser"},
     }
-  } else {
-    return 0.0;
+    pumping := false
+    served := byte(0)
+
+    m.On("startPump", func(data []byte) {
+      if !pumping {
+        pumping = true
+        pump.DigitalWrite(1)
+        served++
+        dgram.Set("event", "online")
+        dgram.Set("drink_id", fmt.Sprintf("%v", served))
+        m.Publish("pumped", []byte(dgram.Encode()))
+        gobot.After(2*time.Second, func() {
+          pump.DigitalWrite(0)
+          pumping = false
+        })
+      }
+    })
+
+    gobot.On(lever.Event("push"), func(data interface{}) {
+      m.Publish("pump", []byte{})
+    })
+
+    m.On("startFault", func(data []byte) {
+      dgram.Set("event", "error")
+      m.Publish("fault", []byte(dgram.Encode()))
+    })
+
+    gobot.On(fault.Event("push"), func(data interface{}) {
+      m.Publish("startFault", []byte{})
+    })
   }
+
+  gbot.AddRobot(gobot.NewRobot("brewmachine",
+    []gobot.Connection{e, m},
+    []gobot.Device{lever, fault, pump},
+    work,
+  ))
+
+  gbot.Start()
+}
+            </code></pre>
+          </section>
+
+          <section>
+            <img src="http://localhost:8080/?action=stream">  
+          </section>
+        </section>
+
+
+        <section>
+          <section>
+            <h2>Wearable Notifications</h2>
+            <h3>Intel Edison + Pebble + MQTT</h3>
+          </section>
+
+          <section>
+            <h2>watchbot.io</h2>
+          </section>
+
+          <section>
+            <div class="image-container">
+              <img src="images/diagram-connected2.jpg">
+            </div>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+package main
+
+import (
+  "fmt"
+  "net/http"
+  "net/url"
+
+  "github.com/hybridgroup/gobot"
+  "github.com/hybridgroup/gobot/api"
+  "github.com/hybridgroup/gobot/platforms/mqtt"
+  "github.com/hybridgroup/gobot/platforms/pebble"
+)
+
+func pebbleRobot() *gobot.Robot {
+  p := pebble.NewPebbleAdaptor("pebble")
+  m := mqtt.NewMqttAdaptor("mqtt", "tcp://192.168.0.90:1883", "pebble")
+  watch := pebble.NewPebbleDriver(p, "pebble")
+
+  work := func() {
+    m.On("watch", func(data []byte) {
+      watch.SendNotification(string(data))
+    })
+  }
+
+  return gobot.NewRobot("pebble",
+    []gobot.Connection{p, m},
+    []gobot.Device{watch},
+    work,
+  )
+}
+
+func hqRobot() *gobot.Robot {
+  m := mqtt.NewMqttAdaptor("mqtt", "tcp://192.168.0.90:1883", "hq")
+
+  work := func() {
+    watch := func(msg string) {
+      fmt.Println(msg)
+      m.Publish("watch", []byte(msg))
+    }
+
+    post := func(val []byte) {
+      v, _ := url.ParseQuery(string(val))
+      _, err := http.PostForm("https://brewmachine.herokuapp.com/drinks",
+        v,
+      )
+      if err != nil {
+        fmt.Println(err)
+      }
+    }
+    m.On("pump", func(data []byte) {
+      m.Publish("startPump", []byte{})
+    })
+
+    m.On("pumped", func(data []byte) {
+      go post(data)
+      v, _ := url.ParseQuery(string(data))
+      watch(fmt.Sprintf("Customers served: %v", v.Get("drink_id")))
+    })
+    m.On("fault", func(data []byte) {
+      go post(data)
+      watch("There was a fault!")
+    })
+    m.On("drone", func(data []byte) {
+      go post(data)
+      watch(fmt.Sprintf("Message from drone: %v", string(data)))
+    })
+    m.On("gcs", func(data []byte) {
+      fmt.Println(string(data))
+      go post(data)
+    })
+  }
+
+  return gobot.NewRobot("mqtt",
+    []gobot.Connection{m},
+    work,
+  )
+}
+
+func main() {
+  gbot := gobot.NewGobot()
+  api.NewAPI(gbot).Start()
+
+  gbot.AddCommand("pump", func(params map[string]interface{}) interface{} {
+    return gbot.Robot("mqtt").Connection("mqtt").(*mqtt.MqttAdaptor).Publish("startPump", []byte{})
+  })
+  gbot.AddCommand("fault", func(params map[string]interface{}) interface{} {
+    return gbot.Robot("mqtt").Connection("mqtt").(*mqtt.MqttAdaptor).Publish("startFault", []byte{})
+  })
+
+  gbot.AddRobot(hqRobot())
+  gbot.AddRobot(pebbleRobot())
+
+  gbot.Start()
 }
             </code></pre>
           </section>
@@ -683,6 +476,265 @@ function validatePitch(data, offset) {
 
 
         <section>
+          <section>
+            <h2>Mobile Control</h2>
+            <h3>Intel Edison + Pebble + Commander + MQTT</h3>
+          </section>
+
+          <section>
+            <h2>commander.io</h2>
+          </section>
+
+          <section>
+            <h2>Common Protocol for Programming Physical Input/Output</h2>
+            <h3>cppp.io</h3>
+          </section>
+
+          <section>
+            <div class="image-container">
+              <img src="images/diagram-connected3.jpg">
+            </div>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+func main() {
+  gbot := gobot.NewGobot()
+  api.NewAPI(gbot).Start()
+
+  gbot.AddCommand("pump", func(params map[string]interface{}) interface{} {
+    return gbot.Robot("mqtt").Connection("mqtt").(*mqtt.MqttAdaptor).Publish("startPump", []byte{})
+  })
+  gbot.AddCommand("fault", func(params map[string]interface{}) interface{} {
+    return gbot.Robot("mqtt").Connection("mqtt").(*mqtt.MqttAdaptor).Publish("startFault", []byte{})
+  })
+...
+            </code></pre>
+          </section>
+
+          <section>
+            <img src="http://localhost:8080/?action=stream">  
+          </section>
+        </section>
+
+
+        <section>
+          <section>
+            <h2>Drone Delivery</h2>
+            <h3>Intel Edison + MQTT + ARDrone + Commander + Pebble + DigiSpark</h3>
+          </section>
+
+          <section>
+            <div class="image-container">
+              <img src="images/diagram-connected.jpg">
+            </div>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+package main
+
+import (
+  "fmt"
+  "math"
+  "net/url"
+  "time"
+
+  "github.com/hybridgroup/gobot"
+  "github.com/hybridgroup/gobot/platforms/ardrone"
+  "github.com/hybridgroup/gobot/platforms/joystick"
+  "github.com/hybridgroup/gobot/platforms/mqtt"
+)
+
+type pair struct {
+  x float64
+  y float64
+}
+
+func main() {
+  gbot := gobot.NewGobot()
+
+  m := mqtt.NewMqttAdaptor("mqtt", "tcp://192.168.0.90:1883", "gcs")
+  ardroneAdaptor := ardrone.NewArdroneAdaptor("Drone", "192.168.0.40")
+  joystickAdaptor := joystick.NewJoystickAdaptor("ps3")
+
+  joystick := joystick.NewJoystickDriver(joystickAdaptor,
+    "ps3",
+    "./dualshock3.json",
+  )
+
+  drone := ardrone.NewArdroneDriver(ardroneAdaptor, "Drone")
+
+  work := func() {
+    dgram := url.Values{
+      "name":         {"gcs"},
+      "dispenser_id": {"3"},
+      "drink_id":     {"0"},
+      "event":        {"available"},
+      "details":      {"drone"},
+    }
+    m.Publish("gcs", []byte(dgram.Encode()))
+    offset := 32767.0
+    rightStick := pair{x: 0, y: 0}
+    leftStick := pair{x: 0, y: 0}
+
+    m.On("drone", func(data []byte) {
+      dgram.Set("event", "delivery complete")
+      m.Publish("gcs", []byte(dgram.Encode()))
+    })
+
+    gobot.On(joystick.Event("circle_press"), func(data interface{}) {
+      fmt.Println("Drop!")
+      m.Publish("drop", []byte{})
+    })
+    gobot.On(joystick.Event("square_press"), func(data interface{}) {
+      drone.TakeOff()
+      dgram.Set("event", "en route")
+      m.Publish("gcs", []byte(dgram.Encode()))
+    })
+    gobot.On(joystick.Event("triangle_press"), func(data interface{}) {
+      drone.Hover()
+    })
+    gobot.On(joystick.Event("x_press"), func(data interface{}) {
+      drone.Land()
+      dgram.Set("event", "available")
+      m.Publish("gcs", []byte(dgram.Encode()))
+    })
+    gobot.On(joystick.Event("left_x"), func(data interface{}) {
+      val := float64(data.(int16))
+      if leftStick.x != val {
+        leftStick.x = val
+      }
+    })
+    gobot.On(joystick.Event("left_y"), func(data interface{}) {
+      val := float64(data.(int16))
+      if leftStick.y != val {
+        leftStick.y = val
+      }
+    })
+    gobot.On(joystick.Event("right_x"), func(data interface{}) {
+      val := float64(data.(int16))
+      if rightStick.x != val {
+        rightStick.x = val
+      }
+    })
+    gobot.On(joystick.Event("right_y"), func(data interface{}) {
+      val := float64(data.(int16))
+      if rightStick.y != val {
+        rightStick.y = val
+      }
+    })
+
+    gobot.Every(10*time.Millisecond, func() {
+      pair := leftStick
+      if pair.y < -10 {
+        drone.Forward(validatePitch(pair.y, offset))
+      } else if pair.y > 10 {
+        drone.Backward(validatePitch(pair.y, offset))
+      } else {
+        drone.Forward(0)
+      }
+
+      if pair.x > 10 {
+        drone.Right(validatePitch(pair.x, offset))
+      } else if pair.x < -10 {
+        drone.Left(validatePitch(pair.x, offset))
+      } else {
+        drone.Right(0)
+      }
+    })
+
+    gobot.Every(10*time.Millisecond, func() {
+      pair := rightStick
+      if pair.y < -10 {
+        drone.Up(validatePitch(pair.y, offset))
+      } else if pair.y > 10 {
+        drone.Down(validatePitch(pair.y, offset))
+      } else {
+        drone.Up(0)
+      }
+
+      if pair.x > 20 {
+        drone.Clockwise(validatePitch(pair.x, offset))
+      } else if pair.x < -20 {
+        drone.CounterClockwise(validatePitch(pair.x, offset))
+      } else {
+        drone.Clockwise(0)
+      }
+    })
+  }
+
+  robot := gobot.NewRobot("ardrone",
+    []gobot.Connection{joystickAdaptor, ardroneAdaptor, m},
+    []gobot.Device{joystick, drone},
+    work,
+  )
+
+  gbot.AddRobot(robot)
+
+  gbot.Start()
+}
+
+func validatePitch(data float64, offset float64) float64 {
+  value := math.Abs(data) / offset
+  if value >= 0.1 {
+    if value <= 1.0 {
+      return float64(int(value*100)) / 100
+    }
+    return 1.0
+  }
+  return 0.0
+}
+            </code></pre>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+package main
+
+import (
+  "github.com/hybridgroup/gobot"
+  "github.com/hybridgroup/gobot/platforms/digispark"
+  "github.com/hybridgroup/gobot/platforms/gpio"
+  "github.com/hybridgroup/gobot/platforms/mqtt"
+)
+
+func main() {
+  gbot := gobot.NewGobot()
+
+  m := mqtt.NewMqttAdaptor("mqtt", "tcp://192.168.0.90:1883", "drone")
+  digisparkAdaptor := digispark.NewDigisparkAdaptor("digispark")
+
+  servo := gpio.NewServoDriver(digisparkAdaptor, "servo", "0")
+
+  work := func() {
+    servo.Move(10)
+    m.On("drop", func(data []byte) {
+      servo.Move(150)
+      m.Publish("drone", []byte("Dropped"))
+    })
+  }
+
+  robot := gobot.NewRobot("servoBot",
+    []gobot.Connection{digisparkAdaptor, m},
+    []gobot.Device{servo},
+    work,
+  )
+
+  gbot.AddRobot(robot)
+
+  gbot.Start()
+}
+            </code></pre>
+          </section>
+
+          <section>
+            <img src="http://localhost:8080/?action=stream">  
+          </section>
+        </section>
+
+
+        <section>
           <h2>Was that fun?</h2>
         </section>
 
@@ -690,10 +742,22 @@ function validatePitch(data, offset) {
           <h2>Join the Robot Evolution!</h2>
         </section>
 
+        <section>
+          <h2>commander.io</h2>
+        </section>
+
+        <section>
+          <h2>watchbot.io</h2>
+        </section>
 
         <section>
           <h2>cylonjs.com</h2>
           <h3>@cylonjs</h3>
+        </section>
+
+        <section>
+          <h2>gobot.io</h2>
+          <h3>@gobotio</h3>
         </section>
 
         <section>

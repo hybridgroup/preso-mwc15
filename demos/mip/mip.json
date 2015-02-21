@@ -1,0 +1,36 @@
+{
+  "command_set":{
+    "name": "MiP",
+    "type": "d-pad",
+    "commands":[
+      {
+        "label": "Up",
+        "robot": "mip",
+        "device": "",
+        "name": "move",
+        "params":{"direction":"up"}
+      },
+      {
+        "label": "Down",
+        "robot": "mip",
+        "device": "",
+        "name": "move",
+        "params":{"direction":"down"}
+      },
+      {
+        "label": "Left",
+        "robot": "mip",
+        "device": "",
+        "name": "move",
+        "params":{"direction":"left"}
+      },
+      {
+        "label": "Right",
+        "robot": "mip",
+        "device": "",
+        "name": "move",
+        "params":{"direction":"right"}
+      }
+    ]
+  }
+}

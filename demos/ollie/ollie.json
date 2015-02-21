@@ -1,0 +1,36 @@
+{
+  "command_set":{
+    "name": "Olliebot",
+    "type": "d-pad",
+    "commands":[
+      {
+        "label": "Up",
+        "robot": "olliebot",
+        "device": "",
+        "name": "move",
+        "params":{"direction":"up"}
+      },
+      {
+        "label": "Down",
+        "robot": "olliebot",
+        "device": "",
+        "name": "move",
+        "params":{"direction":"down"}
+      },
+      {
+        "label": "Left",
+        "robot": "olliebot",
+        "device": "",
+        "name": "move",
+        "params":{"direction":"left"}
+      },
+      {
+        "label": "Right",
+        "robot": "olliebot",
+        "device": "",
+        "name": "move",
+        "params":{"direction":"right"}
+      }
+    ]
+  }
+}
