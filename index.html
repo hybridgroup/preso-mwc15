@@ -100,17 +100,16 @@
         <section>
           <h2>Starring</h2>
           <div class="image-container">
-            <img src="images/cylonjs-logo.png">
-          </div>
-        </section>
-
-        <section>
-          <h2>Also Starring</h2>
-          <div class="image-container">
             <img src="images/gobot-logo.png">
           </div>
         </section>
 
+        <section>
+          <h2>Featuring</h2>
+          <div class="image-container">
+            <img src="images/cylonjs-logo.png">
+          </div>
+        </section>
 
         <section>
           <div class="image-container">
@@ -131,21 +130,37 @@
 
           <section>
             <pre><code data-trim>
-var Cylon = require('cylon');
+package main
 
-Cylon.robot({
-  connections: { 
-    arduino: {adaptor: 'firmata', port: '/dev/ttyACM0'}
-  },
-  
-  devices: { 
-    led: {driver: 'led', pin: 13}
-  },
+import (
+  "time"
 
-  work: function(my) {
-    every((1).second(), my.led.toggle);
+  "github.com/hybridgroup/gobot"
+  "github.com/hybridgroup/gobot/platforms/firmata"
+  "github.com/hybridgroup/gobot/platforms/gpio"
+)
+
+func main() {
+  gbot := gobot.NewGobot()
+
+  firmataAdaptor := firmata.NewFirmataAdaptor("arduino", "/dev/ttyACM0")
+  led := gpio.NewLedDriver(firmataAdaptor, "led", "13")
+
+  work := func() {
+    gobot.Every(1*time.Second, func() {
+      led.Toggle()
+    })
   }
-}).start();
+
+  robot := gobot.NewRobot("bot",
+    []gobot.Connection{firmataAdaptor},
+    []gobot.Device{led},
+    work,
+  )
+
+  gbot.AddRobot(robot)
+  gbot.Start()
+}
             </code></pre>
           </section>
 
@@ -161,24 +176,176 @@ Cylon.robot({
 
           <section>
             <pre><code data-trim>
+package main
+
+import (
+  "time"
+
+  "github.com/hybridgroup/gobot"
+  "github.com/hybridgroup/gobot/platforms/beaglebone"
+  "github.com/hybridgroup/gobot/platforms/gpio"
+)
+
+func main() {
+  gbot := gobot.NewGobot()
+
+  beagleboneAdaptor := beaglebone.NewBeagleboneAdaptor("beaglebone")
+  led := gpio.NewLedDriver(beagleboneAdaptor, "led", "P9_12")
+
+  work := func() {
+    gobot.Every(1*time.Second, func() {
+      led.Toggle()
+    })
+  }
+
+  robot := gobot.NewRobot("blinkBot",
+    []gobot.Connection{beagleboneAdaptor},
+    []gobot.Device{led},
+    work,
+  )
+
+  gbot.AddRobot(robot)
+  gbot.Start()
+}
+            </code></pre>
+          </section>
+
+          <section>
+            <img src="http://localhost:8080/?action=stream">  
+          </section>          
+        </section>
+
+        <section>
+          <div class="image-container">
+            <img src="images/commander-logo.png">
+          </div>
+          <h3>commander.io</h3>
+        </section>
+
+        <section>
+          <div class="image-container">
+            <img src="images/phonegap-logo.png">
+          </div>
+        </section>
+
+        <section>
+          <div class="image-container">
+            <img src="images/ionic-logo.svg">
+          </div>
+        </section>
+
+        <section>
+          <h2>Common Protocol for Programming Physical Input/Output</h2>
+          <h3>cppp.io</h3>
+        </section>
+
+        <section>
+          <section>
+            <h2>Intel Edison + Sphero Ollie</h2>
+          </section>
+
+          <section>
+            <pre><code data-trim>
 var Cylon = require('cylon');
 
+Cylon.api("http", {host: "0.0.0.0", ssl: false});
+
 Cylon.robot({
-  connection: { 
-    name: 'beaglebone', 
-    adaptor: 'beaglebone' 
+  name: 'olliebot',
+  connections: {
+    bluetooth: { adaptor: 'central', uuid: 'd7995a26ec38', module: 'cylon-ble'}
   },
-  
-  device: { 
-    name: 'led', 
-    driver: 'led', 
-    pin: 'P9_12' 
+
+  devices: {
+    ollie: { name: 'ollie', driver: 'ollie'}
+  },
+
+  move: function(direction) {
+    var my = this;
+
+    switch (direction) {
+      case "up":
+        my.ollie.roll(60, 0, 1);
+        break;
+      case "down":
+        my.ollie.roll(60, 180, 1);
+        break;
+      case "left":
+        my.ollie.setRGB(0xFF0000, false, function() {
+          my.ollie.setRawMotorValues(my.ollie.MotorForward, 200, my.ollie.MotorReverse, 200);
+        });
+        break;
+      case "right":
+        my.ollie.setRGB(0xFF0000, false, function() {
+          my.ollie.setRawMotorValues(my.ollie.MotorReverse, 200, my.ollie.MotorForward, 200);
+        });
+        break;
+    }
+
+    setTimeout(function() {
+      my.ollie.setRGB(0x00FFFF, true, function() {
+        my.ollie.stop();
+      });
+    }, 1000);
+
+    return "ok";
+  },
+
+  commands: function() {
+    return {
+      move: this.move
+    };
   },
 
   work: function(my) {
-    every((1).second(), my.led.toggle);
+    my.ollie.wake(function(err, data){
+      after(200, function() {
+        my.ollie.setRGB(0x00FFFF);
+      });
+    });
   }
 }).start();
+            </code></pre>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+{
+  "command_set":{
+    "name": "Olliebot",
+    "type": "d-pad",
+    "commands":[
+      {
+        "label": "Up",
+        "robot": "olliebot",
+        "device": "",
+        "name": "move",
+        "params":{"direction":"up"}
+      },
+      {
+        "label": "Down",
+        "robot": "olliebot",
+        "device": "",
+        "name": "move",
+        "params":{"direction":"down"}
+      },
+      {
+        "label": "Left",
+        "robot": "olliebot",
+        "device": "",
+        "name": "move",
+        "params":{"direction":"left"}
+      },
+      {
+        "label": "Right",
+        "robot": "olliebot",
+        "device": "",
+        "name": "move",
+        "params":{"direction":"right"}
+      }
+    ]
+  }
+}
             </code></pre>
           </section>
 
@@ -189,27 +356,49 @@ Cylon.robot({
 
         <section>
           <section>
-            <h2>Intel Edison</h2>
+            <h2>Intel Edison + WowWee MiP</h2>
           </section>
 
           <section>
             <pre><code data-trim>
 var Cylon = require('cylon');
 
+Cylon.api("http", {host: "0.0.0.0", ssl: false});
+
 Cylon.robot({
-  connection: {
-    name: 'edison', 
-    adaptor: 'intel-iot'
+  name: 'olliebot',
+  connections: { bluetooth: {adaptor: 'central', uuid: 'd03972a24e55', module: 'cylon-ble'}},
+  devices: {mip: {driver: 'mip'}},
+
+  move: function(direction) {
+    var my = this;
+
+    switch (direction) {
+      case "up":
+        my.mip.setGameMode(my.mip.Games.Roam);
+        break;
+      case "down":
+        my.mip.stop();
+        break;
+      case "left":
+        my.mip.setGameMode(my.mip.Games.Dance);
+        break;
+      case "right":
+        my.mip.setGameMode(my.mip.Games.Default);
+        break;
+    }
+
+    return "ok";
   },
 
-  device: {
-    name: 'led', 
-    driver: 'led', 
-    pin: 4
+  commands: function() {
+    return {
+      move: this.move
+    };
   },
 
   work: function(my) {
-    every((1).second(), my.led.toggle);
+    my.mip.setHeadLED(2, 2, 2, 2);
   }
 }).start();
             </code></pre>
@@ -219,7 +408,6 @@ Cylon.robot({
             <img src="http://localhost:8080/?action=stream">  
           </section>          
         </section>
-
 
         <section>
           <section>
@@ -244,7 +432,7 @@ Cylon.robot({
 
         <section>
           <section>
-            <h2>Brewmaster</h2>
+            <h2>Brewmachine</h2>
           </section>
 
           <section>
@@ -479,15 +667,6 @@ func main() {
           <section>
             <h2>Mobile Control</h2>
             <h3>Intel Edison + Pebble + Commander + MQTT</h3>
-          </section>
-
-          <section>
-            <h2>commander.io</h2>
-          </section>
-
-          <section>
-            <h2>Common Protocol for Programming Physical Input/Output</h2>
-            <h3>cppp.io</h3>
           </section>
 
           <section>
